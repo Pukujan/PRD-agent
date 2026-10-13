@@ -1,0 +1,40 @@
+{
+  "schema_version": "content-generation.visual-style.v1",
+  "reference_asset": "assets/brand/mark.svg",
+  "generation_workflow": "built-in image_gen",
+  "narrative_roles": ["hero", "problem", "supporting", "evidence"],
+  "palette": {
+    "background": "#ffffff",
+    "surface": "#f5f5f5",
+    "primary": "#1f2937",
+    "accent": "#0f766e",
+    "text": "#111827"
+  },
+  "subjects": [
+    "a builder's artifact — a repository, a terminal, a diagram — being read and understood",
+    "the moment a half-formed idea is said out loud in a sentence a stranger understands",
+    "the gap between what a tool does and why anyone should want it"
+  ],
+  "composition": [
+    "one dominant idea per image",
+    "main subjects remain visible and uncropped",
+    "legible on a narrow phone screen"
+  ],
+  "text_policy": "narrative raster assets carry one short title plus one short subtitle; icons, SVGs, logos, and tiny helper graphics remain text-free",
+  "roles": {
+    "hero": {"orientation": "wide", "dimensions": "1600x900"},
+    "problem": {"orientation": "wide", "dimensions": "1600x900"},
+    "supporting": {"orientation": "square", "dimensions": "1200x1200"},
+    "evidence": {"orientation": "portrait", "dimensions": "1080x1350"},
+    "brand-reference": {
+      "purpose": "placeholder mark committed with the adapter; not a designed brand and not a narrative asset"
+    }
+  },
+  "reject_when": [
+    "fake metrics, invented statistics, or invented screenshots",
+    "decorative complexity without meaning",
+    "tiny unreadable labels on a phone screen",
+    "stock imagery implying a product that does not exist yet",
+    "generic abstract 'AI' imagery with no relation to what the product does"
+  ]
+}

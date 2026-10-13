@@ -1,0 +1,15 @@
+{
+  "schema_version": "content-generation.asset-manifest.v1",
+  "system_version": "0.5.12",
+  "assets": [
+    {
+      "path": "assets/brand/mark.svg",
+      "role": "brand-reference",
+      "orientation": "svg",
+      "dimensions": "square",
+      "text_policy": "Text-free placeholder mark; no product claims, no metrics.",
+      "review": "pending-owner-review",
+      "source": "PLACEHOLDER mark created with this adapter so the repository has a reference asset. It is not a designed brand and not a generated narrative asset; replace it when the product has real visual identity."
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+name: auto-merge
+
+# Solo-maintainer auto-merge. Arms GitHub's native auto-merge on PRs opened by
+# the repository owner, so a PR merges itself as soon as the required `gates`
+# check passes -- no human approval step.
+#
+# Why arming is a separate workflow rather than a repo setting: GitHub's
+# auto-merge must be switched on per pull request. This does that switch
+# automatically, then GitHub's own merge queue does the merging.
+#
+# Deliberate boundary: this only ARMS auto-merge. It never force-merges, never
+# bypasses `gates`, and never touches PRs from other authors. A failing or
+# missing `gates` check leaves the PR open, which is the intended fail-closed
+# behavior.
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: auto-merge-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  arm:
+    name: arm auto-merge
+    runs-on: ubuntu-latest
+    if: |
+      github.event.pull_request.user.login == github.repository_owner &&
+      github.event.pull_request.draft == false
+    steps:
+      - name: Arm auto-merge (squash)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge --auto --squash "${{ github.event.pull_request.number }}" \
+            --repo "${{ github.repository }}"

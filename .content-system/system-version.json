@@ -1,0 +1,25 @@
+{
+  "schema_version": "content-generation.adapter.v1",
+  "system": "content-generation-modules",
+  "helper_repository": "https://github.com/Pukujan/content-generation-modules",
+  "helper_version": "0.5.12",
+  "helper_commit": "5c8c5f167098d04cf96fb1fe449880001a1edd14",
+  "helper_pin_note": "FULL CGM 0.5.12 required: all eight modules. Validate with the pinned scripts/validate_content_system.py; apply writing routing at agent boot.",
+  "modules": [
+    "brand-foundation",
+    "content-context",
+    "writing-direction",
+    "human-sounding-writing",
+    "human-output-naming",
+    "visual-direction",
+    "image-generation",
+    "html-demo"
+  ],
+  "authoritative_project_files": [
+    ".content-system/project-brief.json",
+    "stack-manifest.json",
+    ".coord/assignment.json"
+  ],
+  "review_outputs": [],
+  "adoption_status": "adapter pinned; audience/problem/solution are DRAFTED FROM THE OWNER'S STATED GOAL (a repeatable PRD agent that turns an inventor's own artifacts into human-communicable product stories) and are expected to be revised as the product is defined. No product evidence is claimed yet because the repository has no implementation."
+}

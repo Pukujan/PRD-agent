@@ -1,0 +1,26 @@
+{
+  "schema_version": "content-generation.review-rubric.v1",
+  "dimensions": [
+    {
+      "id": "problem_clarity",
+      "question": "Can a reader who has never seen the artifacts say what problem this solves and who has it?"
+    },
+    {
+      "id": "market_gap",
+      "question": "Is the gap this addresses stated concretely, supported by what the inspected prior art does and does not do, rather than asserted?"
+    },
+    {
+      "id": "human_sound",
+      "question": "Does the prose read as a person explaining something they built, rather than as generic generated product copy?"
+    },
+    {
+      "id": "grounding",
+      "question": "Does every claim trace to an owner decision or a real artifact, with nothing invented?"
+    },
+    {
+      "id": "repeatability",
+      "question": "Could the same pipeline produce a comparable story for a different artifact, using the recorded worked examples?"
+    }
+  ],
+  "decision_rule": "human review; grounding must pass before anything is published, and a story that reads as generic product copy is sent back for a rewrite rather than accepted"
+}

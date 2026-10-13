@@ -1,0 +1,71 @@
+{
+  "schema_version": "content-generation.project-brief.v2",
+  "project": "PRD-agent",
+  "audience": [
+    "The owner: a builder who has made tools, libraries, protocols, and demos, and can explain how each one works but needs help saying what problem it solves and who has that problem",
+    "A reader of the resulting product story: a prospective user, collaborator, or early adopter who has never seen the artifacts and has to be told, in plain language, why the thing exists",
+    "The owner again, as the storyboard partner: the person the agent coordinates with when it needs a decision the artifacts cannot answer"
+  ],
+  "problem": "A person who builds something can usually describe its mechanics and almost never its reason to exist for someone else. The gap is not engineering; it is that the problem being solved, the person who has it, and the space left open by what already exists are all implicit in the builder's head and in the artifacts, and neither is written down in a form another human will read to the end. Specification tooling does not close this gap, because it produces requirement-shaped engineering documents for a team that has already decided to build; it does not produce the story that makes anyone want the thing in the first place.",
+  "solution": "A repeatable agent workflow that takes a builder's own artifacts (a repository, a tool, a protocol, a demo) as its input and produces a human-quality product story as its primary output: the problem it solves, who has it, the market gap, why now, what the product is, and how it should be communicated. The process runs in two modes over the same pipeline: a storyboarding mode that coordinates with the author through questions and decisions, and an autonomous mode that runs the same steps without a human in the loop. Worked examples accumulate so the process improves with use rather than resetting each time.",
+  "mechanism": [
+    "Intake the owner's existing artifacts and read them for evidence rather than inventing detail",
+    "Run a storyboarding pass with the owner where a decision cannot be derived from the artifacts",
+    "Derive the problem, the audience, the gap in the market, and the reason it matters now",
+    "Draft the product story as human prose, with the problem and the gap as the spine of the piece",
+    "Review the draft against a rubric that rewards specificity and penalizes generic product language",
+    "Record each finished story as a worked example, so the same process can be re-run with or without a human in the loop"
+  ],
+  "evidence": [
+    {
+      "claim": "The owner set the goal for this repository: a repeatable PRD agent that turns things and technologies the owner has already created into product stories, written in an elaborate human-communicable way, focused on the problem solved and the market gap, packaged for human use, coordinating with the owner for storyboarding, and reusable through examples so the process runs both with and without a human question-and-answer step.",
+      "source": "Owner decision recorded in the working session that started this repository.",
+      "status": "planned",
+      "supports": "Establishes the intended purpose, the intended input, the intended output, and the two operating modes for this repository. It is the basis for the drafted audience, problem, solution, and mechanism above.",
+      "limits": "It does not establish that any part of the product exists, nor that a story produced this way is measurably better than one written without it. It is an intention, not a result.",
+      "recorded_at": "2026-10-13T00:00:00Z",
+      "source_revision": {
+        "kind": "owner_decision",
+        "reference": "Owner statement of goal at repository start-up",
+        "observed_at": "2026-10-13"
+      },
+      "cite_in_readme": false
+    },
+    {
+      "claim": "The mechanism list above (intake, storyboard, derive, draft, review, record an example) is a plausible pipeline, not a chosen architecture.",
+      "source": "No implementation, benchmark, or design document has been inspected for this repository; the mechanism is unverified against a working build.",
+      "status": "unknown",
+      "supports": "Nothing yet. It marks the pipeline as an open question so a later reader does not mistake the list for a decision.",
+      "limits": "Says nothing about which agent framework, prompt structure, example format, or review method is feasible, at what cost, or at what quality.",
+      "recorded_at": "2026-10-13T00:00:00Z",
+      "source_revision": {
+        "kind": "unknown_search",
+        "reference": "No architecture search performed against this repository at the time of writing",
+        "observed_at": "2026-10-13"
+      },
+      "cite_in_readme": false
+    }
+  ],
+  "boundaries": [
+    "This repository has no implementation yet; nothing here is a shipped product claim.",
+    "A product story produced by this agent describes the owner's real artifacts and must not invent features, customers, adoption, or numbers the artifacts do not support.",
+    "No numeric claims — accuracy, latency, pricing, or market size — may appear in any human-facing document until a committed artifact or external source supports them.",
+    "Market-gap claims are stated as the gap this product addresses, supported by what the inspected prior art does and does not do, and never as a claim about a competitor's internals.",
+    "The storyboard step records owner decisions as owner decisions, distinct from anything derived from the artifacts."
+  ],
+  "terminology": {
+    "preferred": {
+      "product story": "the human-readable account of what a product is, what problem it solves, and who has that problem",
+      "storyboard": "the structured pass in which the agent coordinates with the owner to settle decisions the artifacts cannot answer",
+      "worked example": "a finished story kept as a reference so the process can be repeated consistently",
+      "prior art": "the existing tools and formats inspected to locate the gap this product addresses"
+    },
+    "avoid": [
+      "invented metrics or adoption figures",
+      "claiming shipped features while the repository has no implementation",
+      "describing a competitor's internal implementation as fact",
+      "unexplained acronyms (PRD, JTBD, PR/FAQ) on first use",
+      "generic product-speak (revolutionary, seamless, game-changing, leverage, unlock) in place of a specific claim"
+    ]
+  }
+}
