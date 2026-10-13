@@ -1,0 +1,28 @@
+{
+  "schema": "prd-agent.claims.v1",
+  "artifact": {
+    "name": "project-continuity-modules",
+    "path": "C:/Users/pujan/AppData/Local/acs/deps/project-continuity-modules",
+    "commit": "85e6aa7",
+    "read_at": "2026-10-13"
+  },
+  "claims": [
+    { "id": "C-001", "text": "Stores a project's working memory as ordinary Markdown and JSON files in Git", "status": "verified", "evidence": "templates/v1/ + schemas/v1/ + README.md:9", "note": "The files are the product. README.md and PROJECT.md in the repo are the protocol applied to itself." },
+    { "id": "C-002", "text": "A fresh session can recover purpose, state, task, evidence, blockers, and next action without prior chat history", "status": "verified", "evidence": "PROJECT.md:7 (main goal); AGENTS.md 'Start' section in the repo instructs exactly this read order", "note": "This agent itself resumed PCM work in a fresh session from these files." },
+    { "id": "C-003", "text": "Small Python CLI named `continuity`", "status": "verified", "evidence": "pyproject.toml [project.scripts] continuity = \"continuity.cli:main\"", "note": "" },
+    { "id": "C-004", "text": "Zero runtime dependencies, Python 3.11+", "status": "verified", "evidence": "pyproject.toml dependencies = [], requires-python = \">=3.11\"", "note": "" },
+    { "id": "C-005", "text": "45 deterministic test files, six required CI contexts green on every merged PR", "status": "verified", "evidence": "tests/ file count; README.md:82; .github/workflows/ci.yml", "note": "" },
+    { "id": "C-006", "text": "Checkpoint retries are idempotent by request ID", "status": "verified", "evidence": "tests/test_checkpoint_retries.py; README.md:79", "note": "" },
+    { "id": "C-007", "text": "init is non-destructive — refuses to overwrite different existing content", "status": "verified", "evidence": "README.md:77 cites cli.py:473", "note": "" },
+    { "id": "C-008", "text": "Issue receipts proven end-to-end in production across multiple real checkpoints", "status": "verified", "evidence": "README.md:80; issues #175, #177, #180 carry pcm:receipt-v2 comments", "note": "" },
+    { "id": "C-009", "text": "Managed worktrees: <project>/main plus <project>/worktrees/<TASK-ID> layout", "status": "verified", "evidence": "README.md:69 (v0.7.0, PCM #234)", "note": "" },
+    { "id": "C-010", "text": "GitHub issue receipts post automatically", "status": "claimed", "evidence": "README.md:80", "note": "Receipts are opt-in flags on the checkpoint command, not default. The README is explicit; the story must not overstate." },
+    { "id": "C-011", "text": "Published on PyPI", "status": "unknown", "evidence": "", "note": "README says the package has not been published; PyPI returned 404 as of 2026-09-24. Story CTA must say install-from-source." },
+    { "id": "C-012", "text": "Adoption across many external repositories", "status": "unknown", "evidence": "", "note": "No public adopter count. Hype may gesture at momentum; it may not fabricate a specific number of adopting repos as a sourced claim. Un-sourced numbers are allowed per the hype decision but the flag records what a proof would unlock." }
+  ],
+  "unknowns": [
+    "Whether any published package release exists (none as of last check)",
+    "External adopter count",
+    "How large the research-profile user base is (profiles exist: minimal, software, research, browser-extension)"
+  ]
+}
