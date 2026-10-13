@@ -1,0 +1,27 @@
+{
+  "schema": "prd-agent.positioning.v1",
+  "audience": {
+    "who": "Developers and researchers who run a long project across many agent sessions, several models and tools, and more than one person.",
+    "situation": "The project lasts months. The session that understands it lasts an afternoon.",
+    "trigger": "Coming back to a project and not being able to tell what state it is in — or a fresh session reporting a number that cannot be compared to last week's."
+  },
+  "discomfort": "The project stops making sense once the conversation that held it is gone. Early decisions drop out of context, summaries lose the detail that mattered, agents redo work they cannot see, and every handoff becomes reconstructing history instead of continuing from a known state.",
+  "vision": "The project remembers itself. Any session, in any tool or model, opens the repository and knows what the project is, where it stands, which task is active, what the last session proved, and the exact next action. The project outlives every session that touched it.",
+  "path": "Install the CLI once. Initialize the repository. Every session then reads the state, does one bounded task, records the evidence, and publishes a checkpoint. The next session starts from the record, not the chat.",
+  "alternative": "Keep the state in chat history and hope the window is long enough. Write a context file that goes stale silently. Or rent a hosted memory service — Mem0, Zep, Letta, Supermemory — which stores what an agent said in a database the project does not own.",
+  "differentiator": "The memory is the Git repository itself: plain Markdown and JSON next to the code they describe, no server, no runtime dependencies, Python 3.11 and Git. And the record is validated. `continuity validate` fails on a missing current-task file, a duplicated task ID, or a checkpoint with no evidence. The rest of the category stores state. PCM checks it.",
+  "swap_test": {
+    "passed": true,
+    "note": "Run against the named competitors. 'Persistent memory for your coding agent' is Mem0's and agentmemory's line and fails the swap test outright. 'The project's state lives in your repository as plain files, and a validator checks it' cannot appear on a hosted memory service's site, because renting the database is their business. It cannot appear on a spec-driven tool's site, because none of them ship a validator with evidence semantics. The differentiator survives."
+  },
+  "flags": [
+    { "id": "N-001", "need": "proof", "claim": "Adoption — that real projects beyond this one run on PCM",
+      "unlock": "A published adopter list, or install/usage counts once a package is published." },
+    { "id": "N-002", "need": "proof", "claim": "That a fresh session actually resumes correctly",
+      "unlock": "The result of the blind-test holdout tracked at PCM issue #139. The README itself says deterministic tests cannot establish this." },
+    { "id": "N-003", "need": "proof", "claim": "A reproducible before/after on a real long project",
+      "unlock": "One project's story: the handoff that failed before PCM, and the same handoff working after." },
+    { "id": "N-004", "need": "differentiator", "claim": "Distinct from GitHub Spec Kit and Kiro",
+      "unlock": "Nothing needed. The validator and the evidence semantics are the distinction and they are shipped. Recorded so the story names them explicitly rather than relying on the reader to notice." }
+  ]
+}
