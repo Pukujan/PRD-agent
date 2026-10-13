@@ -14,7 +14,7 @@ You had all of it. It lived in a conversation that is now too long to scroll, in
 
 Then a model change wipes the slate, a second agent starts on the same code, and the reconstruction starts over. Every handoff becomes archaeology.
 
-The failure has a name and it is not your memory. It is where the memory lives.
+The failure has a name. The memory lives somewhere the project does not control.
 
 ## Pick it up cold
 
