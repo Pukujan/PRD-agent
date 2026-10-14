@@ -55,3 +55,30 @@ def test_main_reports_a_stage_failure_with_a_nonzero_code(tmp_path: Path, monkey
     code = cli.main([str(artifact), "--autonomous"])
     assert code == 2
     assert "--trends-file" in capsys.readouterr().err
+
+
+def test_answers_file_parses_and_reaches_the_run(tmp_path: Path, repo_root: Path, pcm_run: Path, monkeypatch) -> None:
+    artifact = tmp_path / "mini"
+    artifact.mkdir()
+    (artifact / "README.md").write_text("# mini\n", encoding="utf-8")
+    answers = tmp_path / "answers.json"
+    answers.write_text('{"N-001": "40 adopters"}', encoding="utf-8")
+    canned = tmp_path / "canned"
+    canned.mkdir()
+    for index, source in enumerate([pcm_run / "claims.json", pcm_run / "positioning.json", pcm_run / "positioning.json"], start=1):
+        (canned / f"{index:02d}.txt").write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+    (canned / "04.txt").write_text(
+        (Path(__file__).parent / "test_story.py").read_text(encoding="utf-8").split('GOOD_BODY = """\\\n')[1].split('"""')[0],
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("PRD_AGENT_LLM", "fake")
+    monkeypatch.setenv("PRD_AGENT_CANNED_DIR", str(canned))
+    monkeypatch.chdir(tmp_path)
+    code = cli.main([
+        str(artifact),
+        "--trends-file", str(repo_root / "tests" / "fixtures" / "trends_pcm.json"),
+        "--answers-file", str(answers),
+    ])
+    assert code == 0
+    assert (tmp_path / "stories" / "mini.md").is_file()
+

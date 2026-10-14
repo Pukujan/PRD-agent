@@ -99,3 +99,97 @@ def test_human_mode_stops_at_the_flag_loop_and_writes_no_story(
     assert result.flags
     assert not result.story_path.exists()
     assert len(fake.calls) == 2
+
+
+def test_answers_are_folded_back_into_positioning_and_the_story_is_regenerated(
+    tmp_path: Path, repo_root: Path, pcm_run: Path
+) -> None:
+    artifact = tmp_path / "mini"
+    artifact.mkdir()
+    (artifact / "README.md").write_text("# mini\n", encoding="utf-8")
+    revised = load(pcm_run / "positioning.json")
+    revised["flags"] = [flag for flag in revised["flags"] if flag["need"] != "proof"]
+    fake = FakeLLM([
+        (pcm_run / "claims.json").read_text(encoding="utf-8"),
+        (pcm_run / "positioning.json").read_text(encoding="utf-8"),
+        json.dumps(revised),
+        GOOD_BODY,
+    ])
+    asked: list[list[dict]] = []
+
+    def ask(flags: list[dict]) -> dict[str, str]:
+        asked.append(flags)
+        return {"N-001": "40 adopters, listed in the README."}
+
+    result = pipeline.run(
+        artifact,
+        llm=fake,
+        trends_file=repo_root / "tests" / "fixtures" / "trends_pcm.json",
+        autonomous=False,
+        ask=ask,
+    )
+    assert asked and asked[0][0]["id"] == "N-001"
+    assert result.awaiting_answers is False
+    assert result.story_path.is_file()
+    assert "40 adopters, listed in the README." in str(fake.calls[2]["prompt"])
+    assert "no answer" in str(fake.calls[2]["prompt"])
+    assert load(result.positioning_path)["flags"] == [flag for flag in revised["flags"]]
+    assert len(fake.calls) == 4
+
+
+def test_the_loop_is_the_same_codepath_in_both_modes(
+    tmp_path: Path, repo_root: Path, pcm_run: Path
+) -> None:
+    """Autonomous mode is one boolean: the same stages, with the questions answered by nobody."""
+    artifact = tmp_path / "mini"
+    artifact.mkdir()
+    (artifact / "README.md").write_text("# mini\n", encoding="utf-8")
+    scripted = [
+        (pcm_run / "claims.json").read_text(encoding="utf-8"),
+        (pcm_run / "positioning.json").read_text(encoding="utf-8"),
+        GOOD_BODY,
+    ]
+    autonomous = pipeline.run(
+        artifact, llm=FakeLLM(scripted),
+        trends_file=repo_root / "tests" / "fixtures" / "trends_pcm.json", autonomous=True,
+    )
+    human = pipeline.run(
+        artifact, llm=FakeLLM(scripted),
+        trends_file=repo_root / "tests" / "fixtures" / "trends_pcm.json",
+        autonomous=False, answers={},
+    )
+    assert autonomous.story_path.read_text(encoding="utf-8") == human.story_path.read_text(encoding="utf-8")
+
+
+def test_an_unanswered_flag_stays_in_the_footer(tmp_path: Path, repo_root: Path, pcm_run: Path) -> None:
+    artifact = tmp_path / "mini"
+    artifact.mkdir()
+    (artifact / "README.md").write_text("# mini\n", encoding="utf-8")
+    fake = FakeLLM([
+        (pcm_run / "claims.json").read_text(encoding="utf-8"),
+        (pcm_run / "positioning.json").read_text(encoding="utf-8"),
+        (pcm_run / "positioning.json").read_text(encoding="utf-8"),
+        GOOD_BODY,
+    ])
+    result = pipeline.run(
+        artifact, llm=fake,
+        trends_file=repo_root / "tests" / "fixtures" / "trends_pcm.json",
+        autonomous=False, ask=lambda flags: {},
+    )
+    page = result.story_path.read_text(encoding="utf-8")
+    assert page.count("`[NEED: proof]`") == 3
+    assert result.flags
+
+
+def test_answers_from_file_reads_a_flag_id_map(tmp_path: Path) -> None:
+    path = tmp_path / "answers.json"
+    path.write_text('{"N-001": "40 adopters"}', encoding="utf-8")
+    assert pipeline.answers_from_file(path) == {"N-001": "40 adopters"}
+
+
+def test_answers_from_file_rejects_a_non_object(tmp_path: Path) -> None:
+    path = tmp_path / "answers.json"
+    path.write_text('["nope"]', encoding="utf-8")
+    with pytest.raises(StageError):
+        pipeline.answers_from_file(path)
+

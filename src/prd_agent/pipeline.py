@@ -9,8 +9,9 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Callable
 
-from prd_agent import intake, positioning as positioning_stage, story as story_stage
+from prd_agent import flags, flags as flags_module, intake, positioning as positioning_stage, story as story_stage
 from prd_agent.artifact import Artifact, collect_artifact
 from prd_agent.checks import CheckReport, check_story
 from prd_agent.errors import StageError
@@ -46,6 +47,16 @@ def load_trends(path: Path) -> dict:
     require_valid(doc, TRENDS_SPEC, str(path))
     return doc
 
+def answers_from_file(path: Path) -> dict[str, str]:
+    """Read a `{flag id: answer}` map so a run can be driven without stdin."""
+    try:
+        doc = json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise StageError(f"{path} is not readable JSON: {exc}") from exc
+    if not isinstance(doc, dict):
+        raise StageError(f"{path} must be a JSON object of flag id to answer")
+    return {str(key): str(value) for key, value in doc.items()}
+
 def _write_json(path: Path, doc: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(doc, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -58,7 +69,8 @@ def run(
     trends_file: Path | None = None,
     out: Path | None = None,
     autonomous: bool = False,
-    ask=None,
+    ask: Callable[[list[dict]], dict[str, str]] | None = None,
+    answers: dict[str, str] | None = None,
 ) -> RunResult:
     """Run intake, trends, positioning and story. Human mode stops at the flag loop."""
     artifact_path = Path(artifact_path)
@@ -97,9 +109,21 @@ def run(
         flags=list(positioned.get("flags", [])),
     )
 
-    if not autonomous:
+    if not autonomous and answers is None and ask is None:
         result.awaiting_answers = True
         return result
+
+    if not autonomous:
+        supplied = answers if answers is not None else ask(list(positioned.get("flags", [])))
+        if supplied or ask is not None:
+            positioned = positioning_stage.positioning(
+                claims,
+                trends_doc,
+                llm,
+                answers=flags_module.answers_as_prompt(list(positioned.get("flags", [])), supplied),
+            )
+            _write_json(target_run_dir / "positioning.json", positioned)
+            result.flags = list(positioned.get("flags", []))
 
     page, report = story_stage.story(
         claims=claims, positioning=positioned, trends=trends_doc, llm=llm
@@ -107,4 +131,31 @@ def run(
     target_story.parent.mkdir(parents=True, exist_ok=True)
     target_story.write_text(page, encoding="utf-8")
     result.report = report
+    result.awaiting_answers = False
+    return result
+
+def close_flag_loop(result: RunResult, *, llm: LLM, answers: dict[str, str]) -> RunResult:
+    """Resume a stopped human-mode run with the owner's answers.
+
+    Reads the documents already on disk, folds the answers back into positioning, regenerates
+    the story and rewrites the affected files.
+    """
+    claims = json.loads(result.claims_path.read_text(encoding="utf-8"))
+    trends_doc = json.loads(result.trends_path.read_text(encoding="utf-8"))
+    positioned = json.loads(result.positioning_path.read_text(encoding="utf-8"))
+    revised = positioning_stage.positioning(
+        claims,
+        trends_doc,
+        llm,
+        answers=flags_module.answers_as_prompt(list(positioned.get("flags", [])), answers),
+    )
+    _write_json(result.positioning_path, revised)
+    page, report = story_stage.story(
+        claims=claims, positioning=revised, trends=trends_doc, llm=llm
+    )
+    result.story_path.parent.mkdir(parents=True, exist_ok=True)
+    result.story_path.write_text(page, encoding="utf-8")
+    result.flags = list(revised.get("flags", []))
+    result.report = report
+    result.awaiting_answers = False
     return result

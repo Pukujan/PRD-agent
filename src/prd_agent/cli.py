@@ -9,9 +9,10 @@ import argparse
 import sys
 from pathlib import Path
 
+from prd_agent import flags as flags_module
 from prd_agent.errors import StageError
 from prd_agent.llm import default_llm
-from prd_agent.pipeline import run
+from prd_agent.pipeline import answers_from_file, close_flag_loop, run
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
@@ -51,15 +52,17 @@ def main(argv: list[str] | None = None) -> int:
             trends_file=Path(args.trends_file) if args.trends_file else None,
             out=Path(args.out) if args.out else None,
             autonomous=args.autonomous,
+            answers=answers_from_file(Path(args.answers_file)) if args.answers_file else None,
         )
     except StageError as error:
         print(f"prd-agent: {error}", file=sys.stderr)
         return 2
     if result.awaiting_answers:
-        print(f"prd-agent: {len(result.flags)} open flags. Answer them and re-run with --answers-file, "
-              f"or re-run with --autonomous to ship them as the footer.")
-        for flag in result.flags:
-            print(f"  [{flag['id']}] {flag['need']}: {flag['claim']} (unlock: {flag['unlock']})")
+        answers = flags_module.ask_questions(result.flags)
+        result = close_flag_loop(result, llm=llm, answers=answers)
+        if result.story_path.is_file():
+            print(f"prd-agent: wrote {result.story_path}")
+            return 0
         return 0
     print(f"prd-agent: wrote {result.story_path}")
     return 0
