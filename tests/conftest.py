@@ -20,3 +20,10 @@ def pcm_run(repo_root: Path) -> Path:
 @pytest.fixture(scope="session")
 def pcm_story(repo_root: Path) -> Path:
     return repo_root / "stories" / "pcm.md"
+
+
+@pytest.fixture(autouse=True)
+def isolate_evals_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    temp_evals = tmp_path / "evals" / "story_evals.json"
+    monkeypatch.setattr("prd_agent.evals.EVALS_PATH", temp_evals)
+

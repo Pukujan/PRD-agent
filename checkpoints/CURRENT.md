@@ -12,10 +12,11 @@ Phase: implementation.
 
 - continuity protocol initialized.
 - Task 0: Created GitHub issue #5 and task projection PRA-0001.
+- The four-stage pipeline, the self-check, the two modes, the live trend pass and the eval append are implemented and tested.
 
 ## Active
 
-- `PRA-0001`: Build the four-stage pipeline that turns an artifact repo into a marketing story (`tasks/TASK-PRA-0001-prd-agent-pipeline.md`).
+- `PRA-0001`: Build the four-stage pipeline that turns an artifact repo into a marketing story (`tasks/TASK-PRA-0001-prd-agent-pipeline.md`), leaf issue https://github.com/Pukujan/PRD-agent/issues/5.
 
 ## Queued
 
@@ -27,4 +28,4 @@ None known.
 
 ## Next atomic action
 
-Start Task 1 of `docs/superpowers/plans/2026-10-13-prd-agent-pipeline.md`: Vendor the copywriting skill and stand up the package.
+Confirm the `gates` check on the PR and merge.

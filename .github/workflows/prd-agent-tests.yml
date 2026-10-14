@@ -1,0 +1,59 @@
+name: prd-agent tests
+
+# Tests for the pipeline itself. The stack gates for this repository live in
+# acs-gates.yml and its `gates` job stays the required status check on main.
+# This workflow is additive: it proves the pipeline's own suite passes and that
+# the package still ships with zero runtime dependencies.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prd-agent-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: pytest (3.12)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install the package and pytest
+        run: python -m pip install -e ".[dev]"
+
+      - name: Run the suite
+        run: python -m pytest -q
+
+      - name: Prove the vendored skill is intact
+        run: python -m pytest tests/test_skill.py -q
+
+      - name: Prove no runtime dependency was added
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import pathlib
+          import sys
+          import tomllib
+
+          data = tomllib.loads(pathlib.Path("pyproject.toml").read_text(encoding="utf-8"))
+          deps = data["project"].get("dependencies", [])
+          if deps:
+              print(f"runtime dependencies are not allowed: {deps}", file=sys.stderr)
+              raise SystemExit(1)
+          print("zero runtime dependencies")
+          PY
