@@ -65,6 +65,32 @@ Run `python -m pytest -q` from repository root.
 
 No checkpoints yet.
 
+### 2026-10-14 05:01:35 UTC — Antigravity
+
+<!-- continuity:checkpoint {"agent":"Antigravity","blocked":[],"changed":["src/prd_agent/, tests/, docs/CORPUS_SEAM.md, README.md, .github/workflows/prd-agent-tests.yml"],"completed":["The four-stage pipeline is implemented and tested: intake reads an artifact into claims.json, the live web pass produces trends.json, positioning derives the spine and runs the swap test in code, and the story stage drafts through the vendored copywriting skill, gates the draft against that skill's own self-check and appends the proof table, the flags and the self-check paragraph in code","The flag loop runs in two modes over one pipeline, and finished stories are appended as worked examples and retrieved by keyword overlap"],"decisions":["no new decisions"],"evidence":["python -m pytest -q: every test passes with no network access","continuity validate --root .: VALID","the vendored copywriting skill is MIT at commit 0f8d8996, recorded with SHA-256 hashes in src/prd_agent/vendor/copywriting/PROVENANCE.md"],"next_action":"Open the pull request, wait for the gates check, then merge","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"PRA-0001","timestamp":"2026-10-14T05:01:35Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"d84ce308e7dfde1adaec481927ac440d074ea8eef1dd09fe09b19029bfe4abda","request_id":"2a8bd6d62722463f8fa2a901da9cb5ca","schema":"project-continuity.checkpoint-operation.v1","task_id":"PRA-0001"} -->
+
+Completed:
+- The four-stage pipeline is implemented and tested: intake reads an artifact into claims.json, the live web pass produces trends.json, positioning derives the spine and runs the swap test in code, and the story stage drafts through the vendored copywriting skill, gates the draft against that skill's own self-check and appends the proof table, the flags and the self-check paragraph in code
+- The flag loop runs in two modes over one pipeline, and finished stories are appended as worked examples and retrieved by keyword overlap
+
+Evidence:
+- python -m pytest -q: every test passes with no network access
+- continuity validate --root .: VALID
+- the vendored copywriting skill is MIT at commit 0f8d8996, recorded with SHA-256 hashes in src/prd_agent/vendor/copywriting/PROVENANCE.md
+
+Decisions:
+- no new decisions
+
+Changed:
+- src/prd_agent/, tests/, docs/CORPUS_SEAM.md, README.md, .github/workflows/prd-agent-tests.yml
+
+Blocked/uncertain:
+- none
+
+Next:
+- Open the pull request, wait for the gates check, then merge
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → minimum relevant spec. Checkpoint before stopping.
