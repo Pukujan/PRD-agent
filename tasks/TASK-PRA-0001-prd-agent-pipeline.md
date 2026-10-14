@@ -1,8 +1,8 @@
 # TASK-PRA-0001 — Prd Agent Pipeline
 
-<!-- continuity:task {"acceptance":["The four-stage pipeline runs over an artifact and produces story.md","Self-check runs against ai-tells rules and gates draft","Two execution modes (interactive and autonomous) run over one pipeline","Live trend pass analyzes competitors and market sophistication","Finished stories append to evals/story_evals.json and are retrieved by keyword overlap","Python test suite passes with zero network access and continuity validate is VALID"],"depends_on":[],"goal":"Build the four-stage pipeline that turns an artifact repo into a marketing story","id":"PRA-0001","issue_url":"https://github.com/Pukujan/PRD-agent/issues/5","next_action":"Confirm the `gates` check on the PR and merge","owner":"Pukujan","priority":"P1","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"active","why":"Generated copy reads as an audit, so nothing gets explained to a stranger"} -->
+<!-- continuity:task {"acceptance":["The four-stage pipeline runs over an artifact and produces story.md","Self-check runs against ai-tells rules and gates draft","Two execution modes (interactive and autonomous) run over one pipeline","Live trend pass analyzes competitors and market sophistication","Finished stories append to evals/story_evals.json and are retrieved by keyword overlap","Python test suite passes with zero network access and continuity validate is VALID"],"depends_on":[],"goal":"Build the four-stage pipeline that turns an artifact repo into a marketing story","id":"PRA-0001","issue_url":"https://github.com/Pukujan/PRD-agent/issues/5","next_action":"Execute Task 16 (PRA-0002) for the first real target run","owner":"Pukujan","priority":"P1","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"completed","why":"Generated copy reads as an audit, so nothing gets explained to a stranger"} -->
 
-- Status: active
+- Status: completed
 - Owner: Pukujan
 - Priority: P1
 - Depends on: none
