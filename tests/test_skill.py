@@ -24,8 +24,10 @@ def test_recorded_hashes_match_the_vendored_files() -> None:
     }
     assert recorded, "PROVENANCE.md records no hashes"
     for relative, digest in recorded.items():
-        actual = hashlib.sha256((root / relative).read_bytes()).hexdigest()
+        data = (root / relative).read_bytes().replace(b"\r\n", b"\n")
+        actual = hashlib.sha256(data).hexdigest()
         assert actual == digest, f"{relative} changed since it was vendored"
+
 
 
 def test_reference_files_exist() -> None:
