@@ -87,6 +87,24 @@ BANNED_WORDS = (
 )
 BANNED_WORD_PATTERN = re.compile(r"(?i)\b(?:" + "|".join(re.escape(w) for w in BANNED_WORDS) + r")\w*")
 
+CAP_LIMITS = {"fragment": 1, "reflexive_three": 1, "cap_vocabulary": 1, "em_dash_long": 1}
+CAP_WORDS = frozenset(
+    {
+        "seamless", "robust", "streamline", "empower", "elevate", "unlock", "unleash", "harness",
+        "foster", "enhance", "optimize", "cutting-edge", "innovative", "revolutionary",
+        "transformative", "holistic", "comprehensive", "pivotal", "crucial", "vital", "powerful",
+        "next-level", "world-class", "best-in-class", "landscape", "navigate", "ecosystem",
+        "journey", "supercharge", "turbocharge",
+    }
+)
+INTENSIFIERS = frozenset(
+    {"truly", "genuinely", "incredibly", "deeply", "fundamentally", "significantly", "simply",
+     "actually", "literally", "quietly"}
+)
+REFLEXIVE_THREE = re.compile(r"(?i)\b(\w+),\s+(\w+),?\s+and\s+(\w+)[.!?\n]")
+FALSE_RANGE = re.compile(r"(?i)\bfrom\s+[a-z]+\s+to\s+[a-z]+\b")
+ORDERED_ITEM = re.compile(r"^\s*\d+[.)]\s+")
+
 
 @dataclass(frozen=True)
 class Finding:
@@ -123,7 +141,46 @@ class CheckReport:
         return tuple(item for item in self.findings if item.severity == REVIEW)
 
     def cap_violations(self) -> tuple[Finding, ...]:
-        return ()
+        """The cap findings past their limit, counted per rule per section."""
+        counts: dict[tuple[str, str], list[Finding]] = {}
+        for finding in self.caps:
+            counts.setdefault((finding.rule, finding.section), []).append(finding)
+        violations: list[Finding] = []
+        for (rule, _section), items in counts.items():
+            limit = CAP_LIMITS.get(rule, 0)
+            if len(items) > limit:
+                violations.extend(items[limit:])
+        return tuple(violations)
+
+    def summary(self) -> str:
+        counts = {rule: 0 for rule in ("contrast_reveal", "negation_list", "trailing_pile_on",
+                                       "self_answered_question", "colon_reveal", "stock_phrase",
+                                       "banned_vocabulary", "hype_punctuation", "em_dash_short")}
+        for finding in self.findings:
+            counts[finding.rule] = counts.get(finding.rule, 0) + 1
+        bans = len(self.bans)
+        caps = {rule: 0 for rule in CAP_LIMITS}
+        for finding in self.caps:
+            caps[finding.rule] = caps.get(finding.rule, 0) + 1
+        caps_text = ", ".join(f"{rule} {caps[rule]}/{CAP_LIMITS[rule]}" for rule in CAP_LIMITS)
+        return (
+            f"**Self-check.** Run by `prd_agent.checks` against the vendored `copywriting` skill's "
+            f"`references/ai-tells.md`. {bans} hard bans in {len(self.sections)} sections "
+            f"(contrast reveals {counts['contrast_reveal']}, negation lists {counts['negation_list']}, "
+            f"trailing pile-ons {counts['trailing_pile_on']}, self-answered questions "
+            f"{counts['self_answered_question']}, colon reveals {counts['colon_reveal']}, stock phrases "
+            f"{counts['stock_phrase']}, banned words {counts['banned_vocabulary']}, hype punctuation "
+            f"{counts['hype_punctuation']}, em dashes in short copy {counts['em_dash_short']}). "
+            f"Frequency caps, counted per section: {caps_text}. Structural beats present: discomfort, "
+            f"vision, path. {self.limitations()}"
+        )
+
+    def limitations(self) -> str:
+        return (
+            "What this check cannot decide: whether the story lands, whether a sentence that avoids "
+            "every rule is still empty, and any tell written in a shape no rule here matches. That "
+            "judgment is the owner's."
+        )
 
     def passed(self) -> bool:
         return not self.bans and not self.cap_violations()
@@ -184,7 +241,7 @@ def _check_prose(section: Section) -> list[Finding]:
             continue
         stripped = _HEADING.sub(r"\2", text).replace("**", "").strip()
         is_bold_question = bool(_BOLD_QUESTION.match(text))
-        if _EM_DASH.search(text):
+        if (section.name == "hero" or _HEADING.match(text)) and _EM_DASH.search(text):
             findings.append(Finding("em_dash_short", BAN, section.name, line, text,
                                     "em dashes are banned in headings and the hero"))
         if _HYPE.search(text):
@@ -239,6 +296,93 @@ def _check_prose(section: Section) -> list[Finding]:
     return findings
 
 
+def _check_caps(section: Section) -> list[Finding]:
+    """The frequency caps and the review-only findings for one section."""
+    findings: list[Finding] = []
+
+    for line, raw in _prose_lines(section):
+        text = raw.strip()
+        if not text or _HEADING.match(text):
+            continue
+        if section.name != "hero" and _EM_DASH.search(text):
+            findings.append(Finding("em_dash_long", CAP, section.name, line, text, "one em dash per section"))
+        if REFLEXIVE_THREE.search(text):
+            findings.append(Finding("reflexive_three", CAP, section.name, line, text, "one three-item list per section"))
+        if FALSE_RANGE.search(text):
+            findings.append(Finding("false_range", REVIEW, section.name, line, text, "a range whose ends do not span"))
+
+    paragraphs = [block.strip() for block in section.text.split("\n\n") if block.strip()]
+    for paragraph in paragraphs:
+        if _HEADING.match(paragraph):
+            continue
+        words = _WORD.findall(paragraph)
+        if words and len(words) <= 2 and not any(w.lower() in COMMON_VERBS for w in words):
+            findings.append(Finding("fragment", CAP, section.name, section.start_line, paragraph, "one fragment per section"))
+        has_cap = any(word.lower() in CAP_WORDS for word in words)
+        intensifiers = sum(1 for word in words if word.lower() in INTENSIFIERS)
+        if has_cap or intensifiers >= 2:
+            findings.append(Finding("cap_vocabulary", CAP, section.name, section.start_line, paragraph[:120],
+                                    "cap vocabulary in paragraph"))
+
+    for line, raw in _prose_lines(section):
+        text = raw.strip()
+        if not text:
+            continue
+        for sentence in _sentences(text):
+            word_count = len(_WORD.findall(sentence))
+            if word_count > 20:
+                findings.append(Finding("long_sentence", REVIEW, section.name, line, sentence,
+                                        f"{word_count} words, read it aloud"))
+    return findings
+
+
+def check_beats(body: str) -> list[Finding]:
+    """The three structural beats of the Human Action Model, as far as they are mechanical.
+
+    discomfort: the first `## ` section names the reader's situation in their own terms.
+    vision: a second `## ` section says what the better state looks like.
+    path: a later section carries the ordered steps that get there.
+    """
+    sections = split_sections(body)
+    if not sections or sections[0].name != "hero" or not sections[0].text.startswith("# "):
+        return []
+
+    findings: list[Finding] = []
+    body_sections = [section for section in sections if section.name != "hero"]
+    first_line = sections[0].start_line if sections else 1
+
+    if not body_sections:
+        return [
+            Finding("beat_discomfort", BAN, "hero", first_line, "", "no problem section at all"),
+            Finding("beat_vision", BAN, "hero", first_line, "", "there is no second section to carry the vision"),
+            Finding("beat_path", BAN, "hero", first_line, "", "found 0 ordered steps; the path to action needs at least 3"),
+        ]
+
+    discomfort = body_sections[0]
+    discomfort_text = discomfort.text
+    has_second_person = bool(re.search(r"(?i)\b(?:you|your|you're)\b", discomfort_text))
+    enough_prose = len(_sentences(discomfort_text)) >= 2
+    if not (has_second_person and enough_prose):
+        findings.append(Finding("beat_discomfort", BAN, discomfort.name, discomfort.start_line, discomfort_text,
+                                "the first section does not name the reader's situation"))
+    if len(body_sections) < 2:
+        findings.append(Finding("beat_vision", BAN, discomfort.name, discomfort.start_line, "",
+                                "there is no second section to carry the vision"))
+    else:
+        vision = body_sections[1]
+        if len(_sentences(vision.text)) < 2:
+            findings.append(Finding("beat_vision", BAN, vision.name, vision.start_line, vision.text,
+                                    "the second section does not describe the better state"))
+
+    ordered = 0
+    for section in body_sections[1:]:
+        ordered += sum(1 for line in section.text.splitlines() if ORDERED_ITEM.match(line))
+    if ordered < 3:
+        findings.append(Finding("beat_path", BAN, body_sections[-1].name, body_sections[-1].start_line, "",
+                                f"found {ordered} ordered steps; the path to action needs at least 3"))
+    return findings
+
+
 def check_story(body: str) -> CheckReport:
     """Run every rule over the pitch body and return the report."""
     body, _ = split_body_footer(body)
@@ -246,4 +390,6 @@ def check_story(body: str) -> CheckReport:
     findings: list[Finding] = []
     for section in sections:
         findings.extend(_check_prose(section))
+        findings.extend(_check_caps(section))
+    findings.extend(check_beats(body))
     return CheckReport(findings=tuple(findings), sections=tuple(sections))

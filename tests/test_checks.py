@@ -132,3 +132,66 @@ def test_the_hand_run_line_is_still_caught_as_a_finding() -> None:
         "## H\n\nThe failure has a name and it is not your memory. It is where the memory lives.\n"
     )
     assert [f.rule for f in report.bans] == ["contrast_reveal"]
+
+
+def test_one_fragment_is_fine_and_two_are_not() -> None:
+    one = checks.check_story("## H\n\nSimple.\n\nThis section carries one real sentence with a fact in it.\n")
+    assert one.passed() is True
+    two = checks.check_story("## H\n\nSimple.\n\nDone.\n")
+    assert two.passed() is False
+    assert [f.rule for f in two.cap_violations()] == ["fragment"]
+
+
+def test_a_fragment_needs_to_have_no_verb() -> None:
+    report = checks.check_story("## H\n\nYou had all of it.\n")
+    assert report.findings == ()
+
+
+def test_three_lists_are_capped_per_section() -> None:
+    report = checks.check_story("## H\n\nFast, secure, and scalable.\n\nSmall, light, and quick.\n")
+    assert [f.rule for f in report.cap_violations()] == ["reflexive_three"]
+
+
+def test_cap_vocabulary_is_reported_per_section() -> None:
+    report = checks.check_story(
+        "## H\n\nA seamless, robust platform.\n\nAnother seamless paragraph.\n"
+    )
+    assert [f.rule for f in report.cap_violations()] == ["cap_vocabulary"]
+
+
+def test_em_dashes_are_capped_in_long_copy_not_banned() -> None:
+    report = checks.check_story("## H\n\nOne clause \u2014 and another, with a third \u2014 then a fourth.\n")
+    assert report.bans == ()
+    assert "em_dash_long" in [f.rule for f in report.caps]
+
+
+def test_long_sentences_are_reported_but_never_gate() -> None:
+    sentence = "This sentence keeps going and going, with clause after clause, comma after comma, and still it does not stop until it has run well past the point where any reader is still with it at all."
+    report = checks.check_story(f"## H\n\n{sentence}\n")
+    assert "long_sentence" in [f.rule for f in report.reviews]
+    assert report.passed() is True
+
+
+def test_missing_beats_fail_the_gate() -> None:
+    report = checks.check_story("# Headline\n\n**Subhead.**\n\nInstall it.\n")
+    assert "beat_path" in [f.rule for f in report.bans]
+
+
+def test_the_reference_story_has_all_three_beats(pcm_story: Path) -> None:
+    report = checks.check_story(body_of(pcm_story))
+    assert [f.rule for f in report.bans if f.rule.startswith("beat_")] == []
+
+
+def test_the_summary_states_what_was_and_was_not_checked(pcm_story: Path) -> None:
+    report = checks.check_story(body_of(pcm_story))
+    summary = report.summary()
+    assert "0 hard bans" in summary
+    assert "discomfort, vision, path" in summary
+    assert "whether the story lands" in report.limitations()
+
+
+def test_the_limitations_are_honest_about_scope() -> None:
+    report = checks.check_story("## H\n\nOne sentence with a fact in it, long enough to count.\n")
+    assert "cannot" in report.limitations()
+    assert "shape no rule here matches" in report.limitations()
+
