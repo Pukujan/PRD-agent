@@ -26,7 +26,7 @@ def test_load_trends_rejects_a_broken_fixture(tmp_path: Path) -> None:
 
 def test_a_run_without_a_trends_source_says_what_to_pass(tmp_path: Path) -> None:
     with pytest.raises(StageError) as error:
-        pipeline.run(tmp_path, llm=FakeLLM("{}"), autonomous=True)
+        pipeline.run(tmp_path, llm=FakeLLM("{}"), autonomous=True, live=False)
     assert "--trends-file" in str(error.value)
 
 def test_autonomous_run_writes_every_intermediate_document_and_the_story(
@@ -192,4 +192,32 @@ def test_answers_from_file_rejects_a_non_object(tmp_path: Path) -> None:
     path.write_text('["nope"]', encoding="utf-8")
     with pytest.raises(StageError):
         pipeline.answers_from_file(path)
+
+
+def test_the_live_pass_replaces_the_fixture_when_no_file_is_given(
+    tmp_path: Path, pcm_run: Path
+) -> None:
+    artifact = tmp_path / "mini"
+    artifact.mkdir()
+    (artifact / "README.md").write_text("# mini\n", encoding="utf-8")
+    fake = FakeLLM([
+        (pcm_run / "claims.json").read_text(encoding="utf-8"),
+        (pcm_run / "trends.json").read_text(encoding="utf-8"),
+        (pcm_run / "positioning.json").read_text(encoding="utf-8"),
+        GOOD_BODY,
+    ])
+    result = pipeline.run(artifact, llm=fake, autonomous=True)
+    assert fake.calls[1]["tools"] == [pipeline.trends_stage.llm.WEB_SEARCH_TOOL]
+    assert load(result.trends_path)["schema"] == "prd-agent.trends.v1"
+    assert result.story_path.is_file()
+
+
+def test_no_web_without_a_fixture_still_says_what_to_pass(tmp_path: Path) -> None:
+    artifact = tmp_path / "mini"
+    artifact.mkdir()
+    (artifact / "README.md").write_text("# mini\n", encoding="utf-8")
+    with pytest.raises(StageError) as error:
+        pipeline.run(artifact, llm=FakeLLM("{}"), autonomous=True, live=False)
+    assert "--trends-file" in str(error.value)
+
 

@@ -52,7 +52,7 @@ def test_main_reports_a_stage_failure_with_a_nonzero_code(tmp_path: Path, monkey
     artifact = tmp_path / "mini"
     artifact.mkdir()
     (artifact / "README.md").write_text("# mini\n", encoding="utf-8")
-    code = cli.main([str(artifact), "--autonomous"])
+    code = cli.main([str(artifact), "--autonomous", "--no-web"])
     assert code == 2
     assert "--trends-file" in capsys.readouterr().err
 
@@ -81,4 +81,11 @@ def test_answers_file_parses_and_reaches_the_run(tmp_path: Path, repo_root: Path
     ])
     assert code == 0
     assert (tmp_path / "stories" / "mini.md").is_file()
+
+
+def test_no_web_parses() -> None:
+    args = cli.build_parser().parse_args(["repo", "--no-web", "--trends-file", "t.json"])
+    assert args.no_web is True
+    assert args.trends_file == "t.json"
+
 

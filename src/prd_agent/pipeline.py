@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
-from prd_agent import flags, flags as flags_module, intake, positioning as positioning_stage, story as story_stage
+from prd_agent import flags, flags as flags_module, intake, positioning as positioning_stage, story as story_stage, trends as trends_stage
 from prd_agent.artifact import Artifact, collect_artifact
 from prd_agent.checks import CheckReport, check_story
 from prd_agent.errors import StageError
@@ -71,6 +71,7 @@ def run(
     autonomous: bool = False,
     ask: Callable[[list[dict]], dict[str, str]] | None = None,
     answers: dict[str, str] | None = None,
+    live: bool = True,
 ) -> RunResult:
     """Run intake, trends, positioning and story. Human mode stops at the flag loop."""
     artifact_path = Path(artifact_path)
@@ -79,18 +80,27 @@ def run(
     root = artifact_path.resolve().parent
     name = artifact_path.resolve().name
 
+    if not live and trends is None and trends_file is None:
+        raise StageError(
+            "no trends source. Pass --trends-file <path>, or drop --no-web to run the live web pass."
+        )
+
+    # Intake runs first: the live trends pass reads `claims` to build its prompt.
+    collected: Artifact = collect_artifact(artifact_path)
+    claims = intake.intake(artifact_path, llm, artifact=collected)
+
     if trends is not None:
         trends_doc = trends
         require_valid(trends_doc, TRENDS_SPEC, "trends.json")
     elif trends_file is not None:
         trends_doc = load_trends(Path(trends_file))
-    else:
+    elif not live:
         raise StageError(
-            "no trends source. Pass --trends-file <path> until the live web pass lands."
+            "no trends source. Pass --trends-file <path>, or drop --no-web to run the live web pass."
         )
+    else:
+        trends_doc = trends_stage.analyze(claims, llm)
 
-    collected: Artifact = collect_artifact(artifact_path)
-    claims = intake.intake(artifact_path, llm, artifact=collected)
     positioned = positioning_stage.positioning(claims, trends_doc, llm)
 
     target_run_dir = run_dir(root, name)

@@ -36,6 +36,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="read trends.json from this path instead of running the live web pass",
     )
     parser.add_argument(
+        "--no-web",
+        action="store_true",
+        help="never run the live web pass; requires --trends-file",
+    )
+    parser.add_argument(
         "--answers-file",
         default=None,
         help="a JSON object of flag id to answer, used instead of reading stdin",
@@ -53,6 +58,7 @@ def main(argv: list[str] | None = None) -> int:
             out=Path(args.out) if args.out else None,
             autonomous=args.autonomous,
             answers=answers_from_file(Path(args.answers_file)) if args.answers_file else None,
+            live=not args.no_web,
         )
     except StageError as error:
         print(f"prd-agent: {error}", file=sys.stderr)
