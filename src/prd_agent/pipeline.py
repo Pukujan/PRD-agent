@@ -11,7 +11,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
-from prd_agent import flags, flags as flags_module, intake, positioning as positioning_stage, story as story_stage, trends as trends_stage
+from prd_agent import (
+    evals as evals_stage,
+    flags,
+    flags as flags_module,
+    intake,
+    positioning as positioning_stage,
+    story as story_stage,
+    trends as trends_stage,
+)
 from prd_agent.artifact import Artifact, collect_artifact
 from prd_agent.checks import CheckReport, check_story
 from prd_agent.errors import StageError
@@ -72,6 +80,7 @@ def run(
     ask: Callable[[list[dict]], dict[str, str]] | None = None,
     answers: dict[str, str] | None = None,
     live: bool = True,
+    evals_path: Path | None = None,
 ) -> RunResult:
     """Run intake, trends, positioning and story. Human mode stops at the flag loop."""
     artifact_path = Path(artifact_path)
@@ -135,11 +144,25 @@ def run(
             _write_json(target_run_dir / "positioning.json", positioned)
             result.flags = list(positioned.get("flags", []))
 
+    corpus = evals_stage.load_evals(evals_path or evals_stage.EVALS_PATH)
+    exemplars = evals_stage.select_exemplars(corpus, positioning=positioned)
     page, report = story_stage.story(
-        claims=claims, positioning=positioned, trends=trends_doc, llm=llm
+        claims=claims,
+        positioning=positioned,
+        trends=trends_doc,
+        llm=llm,
+        exemplars=exemplars,
     )
     target_story.parent.mkdir(parents=True, exist_ok=True)
     target_story.write_text(page, encoding="utf-8")
+    record = evals_stage.build_eval(
+        task_name=name,
+        artifact_name=collected.name,
+        positioning=positioned,
+        page=page,
+        report=report,
+    )
+    evals_stage.append_eval(evals_path or evals_stage.EVALS_PATH, record)
     result.report = report
     result.awaiting_answers = False
     return result

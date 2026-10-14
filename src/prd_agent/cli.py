@@ -45,6 +45,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="a JSON object of flag id to answer, used instead of reading stdin",
     )
+    parser.add_argument(
+        "--evals",
+        default=None,
+        help="where to append the worked example; default evals/story_evals.json",
+    )
     return parser
 
 def main(argv: list[str] | None = None) -> int:
@@ -59,6 +64,7 @@ def main(argv: list[str] | None = None) -> int:
             autonomous=args.autonomous,
             answers=answers_from_file(Path(args.answers_file)) if args.answers_file else None,
             live=not args.no_web,
+            evals_path=Path(args.evals) if args.evals else None,
         )
     except StageError as error:
         print(f"prd-agent: {error}", file=sys.stderr)

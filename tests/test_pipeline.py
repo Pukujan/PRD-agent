@@ -221,3 +221,38 @@ def test_no_web_without_a_fixture_still_says_what_to_pass(tmp_path: Path) -> Non
     assert "--trends-file" in str(error.value)
 
 
+def test_a_finished_run_is_appended_and_its_story_becomes_an_exemplar_for_the_next(
+    tmp_path: Path, pcm_run: Path
+) -> None:
+    artifact = tmp_path / "mini"
+    artifact.mkdir()
+    (artifact / "README.md").write_text("# mini\n", encoding="utf-8")
+    corpus_path = tmp_path / "evals" / "story_evals.json"
+    scripted = [
+        (pcm_run / "claims.json").read_text(encoding="utf-8"),
+        (pcm_run / "trends.json").read_text(encoding="utf-8"),
+        (pcm_run / "positioning.json").read_text(encoding="utf-8"),
+        GOOD_BODY,
+    ]
+    first = pipeline.run(
+        artifact, llm=FakeLLM(scripted), autonomous=True,
+        evals_path=corpus_path,
+    )
+    assert corpus_path.is_file()
+    assert load(corpus_path)["evals"][0]["task"] == "mini"
+
+    second_llm = FakeLLM(scripted)
+    pipeline.run(
+        artifact, llm=second_llm, autonomous=True,
+        evals_path=corpus_path,
+    )
+    assert "worked example" in str(second_llm.calls[3]["prompt"]).lower()
+    assert load(corpus_path)["evals"][1]["id"] == 2
+    assert first.story_path.is_file()
+
+
+def repo_root_fixture() -> Path:
+    return Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "trends_pcm.json"
+
+
+
