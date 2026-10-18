@@ -1,0 +1,204 @@
+{
+  "schema": "prd-agent.claims.v1",
+  "artifact": {
+    "name": "_acs-stack-work",
+    "path": "",
+    "commit": "aea4f1b",
+    "read_at": "2026-10-18"
+  },
+  "claims": [
+    {
+      "id": "C-001",
+      "text": "ACS ships a coordination pack at modules/coordination/multi-agent-hotload/v0.1.0/ as its installable product.",
+      "status": "verified",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/README.md",
+      "note": "The pack directory and its docs (HOTLOAD.md, ROLES.md, BEHAVIOR.md, PROPOSALS.md, SPEC.md, NOTES.md, PROMPT_INJECT.md, examples/assignment.example.json) are present and read."
+    },
+    {
+      "id": "C-002",
+      "text": "A complete install requires the full PCM + full CGM (all eight modules including human-output-naming) + OIO + this coordination runtime; a slim subset is an incomplete install.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/HOTLOAD.md",
+      "note": "Stated as binding in HOTLOAD.md, BEHAVIOR.md and the pack README, but the enforcing scripts (hotload_check.py, acs_install.py) were not read. HOTLOAD.md's own 'Required modules' table lists seven module rows (brand-foundation, content-context, writing-direction, human-sounding-writing, visual-direction, image-generation, html-demo) while the text says eight including human-output-naming — the table understates the stack it declares mandatory."
+    },
+    {
+      "id": "C-003",
+      "text": "Roles fill by live join/continue order (first continuer is decision boss, then coder1, coder2); tool identity does not assign roles and a seed list is only a hint.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/ROLES.md",
+      "note": "Normative prose only; seat_protocol.py (the claimed executor) was not read, so the fill rule is unproven in code."
+    },
+    {
+      "id": "C-004",
+      "text": "The decision boss holds a lease measured in minutes, default 30.",
+      "status": "verified",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/examples/assignment.example.json",
+      "note": "The example assignment carries boss_failover.lease_ttl_minutes: 30 and watchdog.watchdog_interval_minutes: 10. The stated 15–120 minute range appears only in prose (ROLES.md, HOTLOAD.md, BEHAVIOR.md); assignment.schema.json was not read, so the range is unenforced as far as this excerpt shows."
+    },
+    {
+      "id": "C-005",
+      "text": "After lease expiry the seat goes vacant, claimants form a FIFO claim queue, the front takes boss, and a returning old boss rejoins at the end with no automatic reclaim.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/ROLES.md",
+      "note": "ROLES.md states the rules and names scripts/seat_protocol.py as the executor; that script was not read, so the queue and no-reclaim behaviour are unproven here."
+    },
+    {
+      "id": "C-006",
+      "text": "A zombie boss that wakes without the seat must reject boss-only actions and drop to worker or re-queue.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/ROLES.md",
+      "note": "Prose rule; no test or code path was read that enforces it."
+    },
+    {
+      "id": "C-007",
+      "text": "A separate agent-less watchdog runs about every 10 minutes and only flags a stale seat — it never appoints a boss.",
+      "status": "verified",
+      "evidence": ".github/workflows/ci.yml",
+      "note": "The CI job 'Exercise the agent-less watchdog' writes a lapsed claim fixture, runs scripts/watchdog_check.py, and asserts the file becomes vacant with an as_of_history key. That proves the vacancy write, not the 'never appoints' rule; seat_protocol.py was not read."
+    },
+    {
+      "id": "C-008",
+      "text": "CI gates merges with continuity validate, continuity preflight, the pin drift check, the pack test suite, the watchdog exercise, and a secret scan.",
+      "status": "verified",
+      "evidence": ".github/workflows/ci.yml",
+      "note": "Each step is present and named. Whether the workflow is a required check on main is not established by the file."
+    },
+    {
+      "id": "C-009",
+      "text": "No secrets are committed to the repository.",
+      "status": "claimed",
+      "evidence": ".github/workflows/ci.yml",
+      "note": "The gate is a git grep for a small set of token-shaped patterns (sk-or-, yolo_, api_key=...). It is a heuristic over the tracked tree and cannot support the README's absolute 'Zero secrets in repository'."
+    },
+    {
+      "id": "C-010",
+      "text": "The OIO issue-log intake surface is installed by OIO's own installer, which refuses to overwrite a hand-edited managed file and recovers an interrupted install from a journal.",
+      "status": "verified",
+      "evidence": ".github/scripts/oio_installer.py",
+      "note": "The source implements managed-file digest comparison (with line-ending normalization), an atomic write path, a transaction journal with restore, and refusal on edited AGENTS.md regions."
+    },
+    {
+      "id": "C-011",
+      "text": "The OIO installer runs on Windows as well as POSIX.",
+      "status": "verified",
+      "evidence": ".github/scripts/oio_installer.py",
+      "note": "A _WindowsTargetFS backend and platform_support() returning supported on win32 are present. SPEC.md §6 still lists OIO as '✅ (port required)' for Windows — the spec matrix lags the code it describes."
+    },
+    {
+      "id": "C-012",
+      "text": "Issue logs are triaged automatically into type, filer origin, priority, impact, release-relevance and review-lane labels.",
+      "status": "verified",
+      "evidence": ".github/scripts/oio_triage.py",
+      "note": "classify_issue() derives the label set and the workflow issue-triage.yml applies it. The workflow triggers on opened/edited/labeled/unlabeled."
+    },
+    {
+      "id": "C-013",
+      "text": "The issue intake form carries core-tier fields plus an optional investigation tier (symptoms, hypotheses, counter-signal, caveat, problems-vs-gaps).",
+      "status": "verified",
+      "evidence": ".github/ISSUE_TEMPLATE/observational-issue.yml",
+      "note": "Fields are present and marked required/optional as described."
+    },
+    {
+      "id": "C-014",
+      "text": "The OIO close-on-merge and status-drift workflows are pinned to the certified OIO 0.2.0 commit rather than a moving branch.",
+      "status": "verified",
+      "evidence": ".github/workflows/oio-close-on-merge.yml",
+      "note": "Both callers reference sha 305adc5d09920d28e603a1b317108637cc30a624 and pass the same oio_ref. The close job is guarded on pull_request.merged == true."
+    },
+    {
+      "id": "C-015",
+      "text": "The mesh-sync workflow requires the current mesh versions of the sibling stack repositories.",
+      "status": "verified",
+      "evidence": ".github/workflows/stay-on-mesh.yml",
+      "note": "The caller uses Pukujan/agent-stack-train/.github/workflows/require-mesh.yml@main — a moving branch, unlike the sha-pinned OIO callers. That is in tension with the repository's own 'do not follow moving main' rule in HOTLOAD.md."
+    },
+    {
+      "id": "C-016",
+      "text": "Two TLA+ models (install and seat) model-check the install rule and the seat protocol.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/formal/install.cfg",
+      "note": "formal/README.md describes both models, the invariants, and the TLC commands, and install.cfg lists TypeOK/NoClobber/FailClosed/InTarget/Idempotent. The .tla files and seat.cfg were not read and no TLC output is recorded, so 'checked' rests on prose. formal/README.md itself states the models are not wired into CI."
+    },
+    {
+      "id": "C-017",
+      "text": "The seat protocol guarantees at most one boss lease, FIFO queueing, append-only history, no watchdog appointment, no zombie action, and monotonic time.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/formal/README.md",
+      "note": "The invariant list is prose. seat.tla, seat.cfg, seat_protocol.py and the coordination tests were all unread, so none of these properties is demonstrated in this excerpt."
+    },
+    {
+      "id": "C-018",
+      "text": "A test taxonomy — acceptance, spec, unit, metamorphic, differential, protocol, failure-path, scenario, formal and holdout — backs the contract's claims.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/SPEC.md",
+      "note": "SPEC.md §8 maps each claim to a test file, but every tests/ file was unread and no run result is recorded. The mapping is a plan, not evidence of passing."
+    },
+    {
+      "id": "C-019",
+      "text": "A blind multi-agent holdout run (HLD-0002) was executed and scored per criterion.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/SPEC.md",
+      "note": "The rubric, harness and run record are named in SPEC.md §8 and the pack README and referenced by commit subjects #99–#101, but the holdout files were unread, so neither the run nor its scores are established."
+    },
+    {
+      "id": "C-020",
+      "text": "Work becomes a PR through propose → boss ACCEPT/REJECT → claim a branch → PR, with nothing going straight to the protected default branch.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/PROPOSALS.md",
+      "note": "The flow is documented. Enforcement depends on the adopter's branch protection, which the pack does not configure — the pack README says protection and auto-merge stay human GitHub steps."
+    },
+    {
+      "id": "C-021",
+      "text": "hotload_check.py fails closed unless the assignment pins, the helper checkout revision and the adapter validation all pass, and writes PROMPT_INJECT.md only on success.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/PROMPT_INJECT.md",
+      "note": "PROMPT_INJECT.md's header says it is 'Generated / refreshed by hotload_check after full adapter VALID', and HOTLOAD.md and the README describe the same gate. hotload_check.py itself was unread."
+    },
+    {
+      "id": "C-022",
+      "text": "A one-command installer, acs_install.py, prepares the adopter surface and never clones, fetches or vendors helper source.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/README.md",
+      "note": "Documented in the pack README, HOTLOAD.md and SPEC.md §7, and the root README claims it 'refuses to write until the pins and the adopter's existing .content-system/ adapter check out'. scripts/acs_install.py was unread; the no-network and refuse-to-write behaviours are unverified."
+    },
+    {
+      "id": "C-023",
+      "text": "Component versions are not restated in the pack; they come from the release train via stack-mesh.json, and adopters follow the train with empty pins.",
+      "status": "claimed",
+      "evidence": "modules/coordination/multi-agent-hotload/v0.1.0/SPEC.md",
+      "note": "SPEC.md §1 states it as binding. stack-mesh.json and pins.json were unread, so the actual certified commits are unknown. PROMPT_INJECT.md does restate a pin (CGM 0.5.12 @ 4cea25e028e0ad9a5a66f4c30855fe9db069ba58), which is the hand-copied pin the spec says must not exist."
+    },
+    {
+      "id": "C-024",
+      "text": "The CGM adapter pins the full content-generation contract at 0.5.12 with eight modules including human-output-naming.",
+      "status": "verified",
+      "evidence": ".content-system/system-version.json",
+      "note": "helper_version 0.5.12 and an eight-entry modules list are present. The commit recorded there (6831f91e165b62d719c05eb492f7375fa932b560) differs from the 0.5.12 commit recorded in PROMPT_INJECT.md (4cea25e028e0ad9a5a66f4c30855fe9db069ba58) — the artifact names two different commits for the same version."
+    },
+    {
+      "id": "C-025",
+      "text": "The pack pins PCM CLI 0.6.0 at commit 4e2385474b4af9249ca009cbdcb38c4498932475.",
+      "status": "claimed",
+      "evidence": ".content-system/project-brief.json",
+      "note": "project-brief.json's fifth evidence record asserts this pin and check_pins.py holding it. pins.json and check_pins.py were unread. SPEC.md §1 uses the same 0.6.0 pin as its example of drift that went stale after 0.7.0 shipped, and the example assignment lists cli_version 0.7.0 — the recorded pin and the stated current version disagree."
+    },
+    {
+      "id": "C-026",
+      "text": "check_pins.py scans every declared projection for the pinned PCM/CGM commits, version families and the eight-module count, and CI runs it on every candidate.",
+      "status": "verified",
+      "evidence": ".github/workflows/ci.yml",
+      "note": "The CI step 'Hotloader pin drift check (fail closed on stale pins)' is present. The scanning behaviour is the README's description of an unread script, so only the CI wiring is verified here."
+    },
+    {
+      "id": "C-027",
+      "text": "The multi-agent hotloader is shipped, delivered by PR #12.",
+      "status": "claimed",
+      "evidence": "README.md",
+      "note": "The root README's surface table says 'Shipped (PR #12)'. No PR #12 record appears in the supplied commit subjects, and no merge fact for it is in the excerpt; the shipped-ness of that specific PR is unverified."
+    }
+  ],
+  "unknowns": [
+    "benchmarks against rival hotloaders",
+    "exact CPU overhead of watchdog"
+  ]
+}

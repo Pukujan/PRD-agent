@@ -1,0 +1,67 @@
+{
+  "schema": "prd-agent.positioning.v1",
+  "audience": {
+    "who": "Engineers and builders running multiple coding agent sessions on one repository",
+    "situation": "Adding more agent sessions causes coordination failure, duplicate work, and stale leases",
+    "trigger": "Two agents modify the same file or a zombie session approves an unvetted change"
+  },
+  "discomfort": "Two agents, one file, and no rule for who decides. Cursor writes the migration, Codex rewrites the same file from its own memory of the schema, and an uncoordinated session wakes up and approves a change nobody asked for.",
+  "vision": "Any number of agents on your repository, with one named decision boss at a time on a 30-minute lease measured in open files.",
+  "path": "Install the multi-agent hotload coordination pack with acs_install.py, let the adapter gate pass, start sessions with live join-order roles, and move work as proposals.",
+  "alternative": "Relying on prompt files (CLAUDE.md, AGENTS.md), chat history, or per-tool memory that agents cannot inspect and are not bound by.",
+  "differentiator": "The pack asserts decision authority is a lease, not a role: the boss seat fills by live join order, lapses on a 30-minute default TTL, and reopens through a FIFO claim queue that the agent-less watchdog may flag but never fill.",
+  "swap_test": {
+    "passed": true,
+    "note": "No named competitor's language covers this line (closest: none at 0% against a 60% threshold)."
+  },
+  "flags": [
+    {
+      "id": "N-001",
+      "need": "proof",
+      "claim": "After lease expiry the seat goes vacant, claimants form a FIFO queue, the front takes boss, and a returning old boss rejoins at the end with no reclaim (C-005); a zombie boss without the seat must reject boss-only actions (C-006).",
+      "unlock": "Read scripts/seat_protocol.py and run the protocol and failure-path test files that SPEC.md §8 maps to these rules, capturing a run log."
+    },
+    {
+      "id": "N-002",
+      "need": "mechanism",
+      "claim": "hotload_check.py fails closed unless pins, helper checkout revision and adapter validation all pass and writes PROMPT_INJECT.md only on success (C-021); acs_install.py prepares the surface and never clones, fetches or vendors helper source (C-022).",
+      "unlock": "Read hotload_check.py and acs_install.py, then run both against a deliberately stale-pin fixture and show no write, no network call and a non-zero exit."
+    },
+    {
+      "id": "N-003",
+      "need": "differentiator",
+      "claim": "Component versions are not restated in the pack and come from the release train via stack-mesh.json (C-023) — but PROMPT_INJECT.md restates a CGM 0.5.12 pin at one commit while .content-system/system-version.json records a different commit for that same version (C-024), and the PCM pin is 0.6.0 while the example assignment and SPEC.md treat 0.7.0 as current (C-025).",
+      "unlock": "Read pins.json, stack-mesh.json and check_pins.py, and reconcile the two 0.5.12 commits and the 0.6.0/0.7.0 gap — until then 'follows the train, no hand copies' cannot be asserted, only reported as the pack's claim."
+    },
+    {
+      "id": "N-004",
+      "need": "proof",
+      "claim": "Two TLA+ models check the install rule and the seat protocol, and the seat protocol guarantees at most one boss lease, FIFO queueing, append-only history, no watchdog appointment, no zombie action and monotonic time (C-016, C-017).",
+      "unlock": "A recorded TLC run for install.tla and seat.tla with the invariant list, plus wiring the models into CI — formal/README.md itself says they are not wired today."
+    },
+    {
+      "id": "N-005",
+      "need": "proof",
+      "claim": "A blind multi-agent holdout run (HLD-0002) was executed and scored per criterion (C-019), and the test taxonomy backing the contract is passing rather than planned (C-018).",
+      "unlock": "The holdout harness, run record and per-criterion scores, plus a CI run result for the acceptance, protocol, failure-path and scenario suites."
+    },
+    {
+      "id": "N-006",
+      "need": "proof",
+      "claim": "The pack is shipped and delivered by PR #12 (C-027), and a complete install requires eight modules including human-output-naming (C-002) — while HOTLOAD.md's own required-modules table lists seven rows.",
+      "unlock": "The PR #12 merge record on the default branch, and the module-count logic in acs_install.py or check_pins.py showing which eight modules the gate actually enforces."
+    },
+    {
+      "id": "N-007",
+      "need": "audience",
+      "claim": "Who adopts this and at what moment — no owner answers were supplied, so the team-versus-solo split and the trigger event are inferred from the pack's own prose rather than observed.",
+      "unlock": "One owner interview or one adopter record naming team size, the number of concurrent agent sessions, and the incident that made them install the coordination runtime."
+    },
+    {
+      "id": "N-008",
+      "need": "proof",
+      "claim": "The pack's relative standing against rival hotloaders and the CPU overhead of the watchdog are recorded as unknowns and are therefore absent from this positioning entirely.",
+      "unlock": "A comparative benchmark run against at least one named rival hotloader and a measured watchdog cost per interval."
+    }
+  ]
+}
