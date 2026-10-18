@@ -1,0 +1,95 @@
+{
+  "schema": "prd-agent.trends.v1",
+  "category": {
+    "competitors": [
+      {
+        "name": "Mem0",
+        "url": "https://mem0.ai/library/coding-agents/ai-coding-agents-that-actually-remember-your-codebase",
+        "claim": "AI coding agents that actually remember your codebase",
+        "language": [
+          "persistent memory",
+          "context, decisions, and edits retained across sessions",
+          "dedicated memory layer"
+        ]
+      },
+      {
+        "name": "Zep",
+        "url": "https://www.braintrust.dev/articles/best-ai-agent-memory-tools-2026",
+        "claim": "Best AI agent memory tool (framework comparison)",
+        "language": [
+          "memory models",
+          "long-term recall",
+          "temporal knowledge graph"
+        ]
+      },
+      {
+        "name": "Letta",
+        "url": "https://machinelearningmastery.com/the-6-best-ai-agent-memory-frameworks-you-should-try-in-2026/",
+        "claim": "Stateful agents with persistent memory",
+        "language": [
+          "stateful agents",
+          "memory frameworks",
+          "agent state"
+        ]
+      },
+      {
+        "name": "agentmemory",
+        "url": "https://github.com/rohitg00/agentmemory",
+        "claim": "#1 persistent memory for AI coding agents",
+        "language": [
+          "remembers everything",
+          "no more re-explaining",
+          "built on engine"
+        ]
+      },
+      {
+        "name": "GitHub Spec Kit",
+        "url": "https://martinfowler.com/articles/exploring-gen-ai/sdd-3-tools.html",
+        "claim": "Specs as the source of truth, spec lives in the codebase",
+        "language": [
+          "spec-driven development",
+          "structured specs",
+          "single source of truth"
+        ]
+      },
+      {
+        "name": "Kiro",
+        "url": "https://kiro.dev/docs/specs/",
+        "claim": "Structured specifications that break features into implementation plans with tracking",
+        "language": [
+          "structured specifications",
+          "implementation plans",
+          "tracking"
+        ]
+      }
+    ],
+    "sophistication_stage": "jaded",
+    "stage_note": "The category has heard 'agent memory' and 'spec-driven' many times and the language has gone flat and abstract. Mem0, Zep, Letta and Supermemory all claim to remember; Kiro and Spec Kit all claim specs as source of truth. A bigger claim about remembering more will not land. Schwartz's jaded stage calls for a NEW MECHANISM, and PCM has one: the memory is your Git repository, the files are plain text, and a validator checks them. Lead with the mechanism."
+  },
+  "style": {
+    "register": "Category copy is abstract and feature-forward. 'Dedicated memory layer', 'temporal knowledge graph', 'stateful agents'. Almost none of it names the reader's actual Tuesday.",
+    "notes": [
+      "Top results are listicles ranking tools by capability grid, so buyers arrive already comparing feature tables.",
+      "The strongest lines in the space name a felt moment: 'no more re-explaining' beats 'dedicated memory layer'.",
+      "Nothing in the top results mentions whether the stored state is TRUE or just stored. That gap is open ground."
+    ]
+  },
+  "cultural": [
+    {
+      "moment": "Widespread developer fatigue with AI-generated project state that nobody can verify",
+      "url": "https://github.com/orgs/community/discussions/181130",
+      "relevance": "Spec-driven threads now argue about drift and whether the shared spec stays true. The conversation has moved from 'can agents remember' to 'can we trust what they remembered'."
+    },
+    {
+      "moment": "Context windows framed as RAM rather than storage",
+      "url": "https://mem0.ai/library/context-engineering/context-window-is-ram-not-storage-why-most-agent-failures-happen-how-to-fix-them-in-2026",
+      "relevance": "The mental model the audience already holds. 'Context is RAM, memory is storage' lets a story argue that the project's state belongs in storage the project owns."
+    },
+    {
+      "moment": "Verification and reproducibility anxiety across AI-assisted research and engineering",
+      "url": "https://arxiv.org/html/2602.00180v1",
+      "relevance": "Claims about prior agent runs are becoming a liability. A story that promises inspectable evidence rides the mood."
+    }
+  ],
+  "searched_at": "2026-10-13"
+}
