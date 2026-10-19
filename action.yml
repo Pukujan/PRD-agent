@@ -5,11 +5,26 @@ branding:
   icon: "zap"
   color: "amber"
 inputs:
+  provider:
+    description: "Model provider: anthropic or openai (default: detected from the key that is set)"
+    required: false
+  api_key:
+    description: "API key for the selected provider"
+    required: false
+  base_url:
+    description: "Provider base URL (e.g. an OpenAI-compatible endpoint)"
+    required: false
   anthropic_api_key:
-    description: "Anthropic API Key or proxy master key"
+    description: "Anthropic API key (alias for api_key when provider is anthropic)"
+    required: false
+  openai_api_key:
+    description: "OpenAI API key (alias for api_key when provider is openai)"
     required: false
   anthropic_base_url:
-    description: "Custom API base URL (e.g. LiteLLM proxy)"
+    description: "Anthropic base URL"
+    required: false
+  openai_base_url:
+    description: "OpenAI-compatible base URL"
     required: false
   model:
     description: "LLM model override"
@@ -59,8 +74,13 @@ runs:
       id: run-prd
       shell: bash
       env:
+        PRD_AGENT_PROVIDER: ${{ inputs.provider || env.PRD_AGENT_PROVIDER }}
+        PRD_AGENT_API_KEY: ${{ inputs.api_key || env.PRD_AGENT_API_KEY }}
+        PRD_AGENT_BASE_URL: ${{ inputs.base_url || env.PRD_AGENT_BASE_URL }}
         ANTHROPIC_API_KEY: ${{ inputs.anthropic_api_key || env.ANTHROPIC_API_KEY }}
+        OPENAI_API_KEY: ${{ inputs.openai_api_key || env.OPENAI_API_KEY }}
         ANTHROPIC_BASE_URL: ${{ inputs.anthropic_base_url || env.ANTHROPIC_BASE_URL }}
+        OPENAI_BASE_URL: ${{ inputs.openai_base_url || env.OPENAI_BASE_URL }}
         PRD_AGENT_MODEL: ${{ inputs.model || env.PRD_AGENT_MODEL }}
       run: |
         ARGS=("${{ inputs.target_path }}" "--autonomous")

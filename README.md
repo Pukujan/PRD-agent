@@ -27,6 +27,10 @@ PRD-agent runs **autonomously by default**: it reads the artifact, searches the 
 | `--hype LEVEL` | Narrative calibration dial: `1000` (electric), `750` (venture), `500` (balanced), `250` (truth) |
 | `--persona PERSONA` | Target buyer persona: `solopreneur` (unicorn/builder), `enterprise` (cto/vp), `normie` (consumer/magic) |
 | `--pack` | Generate the full multi-asset launch pack under `runs/<artifact-name>/pack/` |
+| `--provider PROVIDER` | Model provider: `anthropic` or `openai` (default: detected from the key that is set) |
+| `--api-key KEY` | Provider API key, overriding the environment |
+| `--base-url URL` | Provider base URL, overriding `PRD_AGENT_BASE_URL` |
+| `--model ID` | Model id, overriding `PRD_AGENT_MODEL` |
 
 The output in `stories/<artifact-name>.md` (or `<artifact_path>/README.md` with `--readme`) is pure pitch: zero audit tables, zero internal code paths, zero em dashes. Every run writes truth telemetry to `runs/<artifact-name>/claims.json`, `trends.json` and `positioning.json`, keeping verification segregated from marketing copy.
 
@@ -59,9 +63,13 @@ jobs:
       - uses: actions/checkout@v4
       - uses: Pukujan/PRD-agent@main
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          provider: anthropic
+          api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           readme: true
 ```
+
+Swap `provider` to `openai` and pass `secrets.OPENAI_API_KEY` to run the same workflow on an
+[OI] key. Both providers are first-class; no proxy or aggregator credential is required.
 
 This automatically inspects your repository, verifies against anti-audit gates, and writes the high-converting manifesto directly into your `README.md`.
 
@@ -111,15 +119,28 @@ artifact repo -> claims.json -> trends.json -> positioning.json -> story.md
 
 ## The model seam
 
-Every stage takes an `LLM`. The shipped provider is a stdlib `urllib` client for the Anthropic
-Messages API, so the package has zero runtime dependencies. Tests inject a fake and never touch
-the network.
+Every stage takes an `LLM`. The shipped providers are stdlib `urllib` clients for the Anthropic
+Messages API and the OpenAI Chat Completions API (which also covers OpenAI-compatible endpoints),
+so the package has zero runtime dependencies. Tests inject a fake and never touch the network.
 
 ```bash
-export ANTHROPIC_API_KEY=...        # or HADES_LITELLM_API_KEY / OPENCODE_LITELLM_MASTER_KEY
-export ANTHROPIC_BASE_URL=...       # optional proxy endpoint (e.g. http://127.0.0.1:4000)
-export ANTHROPIC_MODEL=...          # or PRD_AGENT_MODEL (default: claude-sonnet-4-5-20250929)
+# Pick one provider. The key that is set selects it when PRD_AGENT_PROVIDER is unset.
+export ANTHROPIC_API_KEY=...        # Anthropic Messages API
+export OPENAI_API_KEY=...           # OpenAI Chat Completions API
+
+# Optional overrides
+export PRD_AGENT_PROVIDER=...       # anthropic | openai
+export PRD_AGENT_API_KEY=...        # generic key, used with an explicit provider
+export PRD_AGENT_BASE_URL=...       # provider base URL (e.g. http://127.0.0.1:4000)
+export PRD_AGENT_MODEL=...          # model id
 ```
+
+PRD-agent reads only the selected provider's key or `PRD_AGENT_API_KEY`. It never reads
+`OPENROUTER_API_KEY`, editor-specific master keys, or any other ambient credential.
+
+The live trends pass uses the Anthropic server-side web search tool. OpenAI-compatible endpoints
+have no equivalent, so on that provider pass `--trends-file` (or `--no-web` with a trends file)
+when you need the trends stage.
 
 
 Offline, without a key, the pipeline replays canned responses:

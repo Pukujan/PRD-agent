@@ -110,7 +110,7 @@ def test_interactive_prompts_for_hype(monkeypatch) -> None:
 
     monkeypatch.setattr("prd_agent.hype.ask_hype_level", fake_ask)
     monkeypatch.setattr("prd_agent.cli.run", lambda *args, **kwargs: None)
-    monkeypatch.setattr("prd_agent.cli.default_llm", lambda: None)
+    monkeypatch.setattr("prd_agent.cli.default_llm", lambda **_: None)
 
     try:
         cli.main(["repo", "--interactive", "--no-web", "--trends-file", "t.json"])
@@ -132,7 +132,7 @@ def test_interactive_prompts_for_persona(monkeypatch) -> None:
     monkeypatch.setattr("prd_agent.hype.ask_hype_level", lambda: (called_hype.append(True), "1000")[1])
     monkeypatch.setattr("prd_agent.persona.ask_persona", lambda: (called_persona.append(True), "enterprise")[1])
     monkeypatch.setattr("prd_agent.cli.run", lambda *args, **kwargs: None)
-    monkeypatch.setattr("prd_agent.cli.default_llm", lambda: None)
+    monkeypatch.setattr("prd_agent.cli.default_llm", lambda **_: None)
 
     try:
         cli.main(["repo", "--interactive", "--no-web", "--trends-file", "t.json"])
@@ -145,6 +145,31 @@ def test_interactive_prompts_for_persona(monkeypatch) -> None:
 def test_readme_flag_parses() -> None:
     args = cli.build_parser().parse_args(["repo", "--readme"])
     assert args.readme is True
+
+
+def test_provider_override_flags_parse() -> None:
+    args = cli.build_parser().parse_args(
+        ["repo", "--provider", "openai", "--api-key", "k", "--base-url", "http://x", "--model", "m"]
+    )
+    assert args.provider == "openai"
+    assert args.api_key == "k"
+    assert args.base_url == "http://x"
+    assert args.model == "m"
+
+
+def test_provider_overrides_reach_the_llm_factory(monkeypatch) -> None:
+    captured: dict[str, object] = {}
+
+    def fake_default_llm(**kwargs: object) -> None:
+        captured.update(kwargs)
+        raise cli.StageError("stop before the pipeline")
+
+    monkeypatch.setattr("prd_agent.cli.default_llm", fake_default_llm)
+    code = cli.main(
+        ["repo", "--provider", "openai", "--api-key", "k", "--base-url", "http://x", "--model", "m"]
+    )
+    assert code == 2
+    assert captured == {"provider": "openai", "api_key": "k", "base_url": "http://x", "model": "m"}
 
 
 

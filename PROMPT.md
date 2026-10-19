@@ -79,8 +79,10 @@ Provide the exact, zero-friction command or configuration line to install and ru
 To run the automated, machine-verified pipeline directly against any repository on your machine:
 
 ```bash
-# Set your API key
-export ANTHROPIC_API_KEY="sk-ant-..."
+# Set the key for either provider
+export ANTHROPIC_API_KEY="..."      # Anthropic
+# or
+export OPENAI_API_KEY="..."         # [OI] or any [OI]-compatible endpoint
 
 # Run turnkey ingestion directly into your README
 python -m prd_agent <path-to-repo> --readme

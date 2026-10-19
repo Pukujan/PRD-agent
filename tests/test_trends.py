@@ -90,6 +90,11 @@ def test_search_tools_can_be_disabled_via_env_var(monkeypatch) -> None:
     assert trends.search_tools() == [trends.llm.WEB_SEARCH_TOOL]
 
 
+def test_search_tools_are_omitted_for_a_provider_without_one() -> None:
+    client = trends.llm.OpenAIHTTPLLM(model="m", api_key="k")
+    assert trends.search_tools(client) == []
+
+
 def test_is_search_context_detects_raw_snippets() -> None:
     assert not trends.is_search_context("Short error message")
     assert not trends.is_search_context("I searched the web for you and found nothing.")

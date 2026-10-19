@@ -81,6 +81,27 @@ def build_parser() -> argparse.ArgumentParser:
         default=False,
         help="write the story directly to <artifact-path>/README.md",
     )
+    parser.add_argument(
+        "--provider",
+        choices=["anthropic", "openai"],
+        default=None,
+        help="model provider (default: PRD_AGENT_PROVIDER, else detected from the key that is set)",
+    )
+    parser.add_argument(
+        "--api-key",
+        default=None,
+        help="provider API key, overriding PRD_AGENT_API_KEY and the provider-specific variable",
+    )
+    parser.add_argument(
+        "--base-url",
+        default=None,
+        help="provider base URL, overriding PRD_AGENT_BASE_URL (e.g. http://127.0.0.1:4000)",
+    )
+    parser.add_argument(
+        "--model",
+        default=None,
+        help="model id, overriding PRD_AGENT_MODEL and the provider-specific model variable",
+    )
     return parser
 
 
@@ -103,7 +124,12 @@ def main(argv: list[str] | None = None) -> int:
         remote_repo_name = cleaned_target.split("/")[-1]
 
     try:
-        llm = default_llm()
+        llm = default_llm(
+            provider=args.provider,
+            api_key=args.api_key,
+            base_url=args.base_url,
+            model=args.model,
+        )
         is_autonomous = not args.interactive if args.interactive else args.autonomous
         hype_level = args.hype
         persona_choice = args.persona
