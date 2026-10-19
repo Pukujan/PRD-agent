@@ -66,6 +66,31 @@ Builders and autonomous agents can execute `python -m prd_agent <path> --readme`
 
 No checkpoints yet.
 
+### 2026-10-19 10:52:30 UTC — Antigravity
+
+<!-- continuity:checkpoint {"agent":"Antigravity","blocked":[],"changed":["src/prd_agent/llm.py, src/prd_agent/story.py, src/prd_agent/cli.py, src/prd_agent/pipeline.py, tests/, README.md, skills/prd-agent/SKILL.md"],"completed":["Automated runner discovery: default_llm() normalizes ANTHROPIC_BASE_URL to /v1/messages, falls back to HADES_LITELLM_API_KEY / OPENCODE_LITELLM_MASTER_KEY when ANTHROPIC_API_KEY is unset, and honors ANTHROPIC_MODEL","Added em-dash auto-sanitization in clean_body() before self-check gating and --readme CLI flag to write directly to <artifact_path>/README.md"],"decisions":["no new decisions"],"evidence":["python -m pytest -q: 192 passed cleanly in 11.09s","continuity validate --root .: VALID"],"next_action":"Open PR, verify gates, auto-merge, and publish receipt to issue #22","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"PRA-0009","timestamp":"2026-10-19T10:52:30Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"588a0685e01e9f4e669b78fcbfe6d77e677a1f1e9b7b80522340cd2744f87a4a","request_id":"04193e0bc17d45049d8a53d11c99b344","schema":"project-continuity.checkpoint-operation.v1","task_id":"PRA-0009"} -->
+
+Completed:
+- Automated runner discovery: default_llm() normalizes ANTHROPIC_BASE_URL to /v1/messages, falls back to HADES_LITELLM_API_KEY / OPENCODE_LITELLM_MASTER_KEY when ANTHROPIC_API_KEY is unset, and honors ANTHROPIC_MODEL
+- Added em-dash auto-sanitization in clean_body() before self-check gating and --readme CLI flag to write directly to <artifact_path>/README.md
+
+Evidence:
+- python -m pytest -q: 192 passed cleanly in 11.09s
+- continuity validate --root .: VALID
+
+Decisions:
+- no new decisions
+
+Changed:
+- src/prd_agent/llm.py, src/prd_agent/story.py, src/prd_agent/cli.py, src/prd_agent/pipeline.py, tests/, README.md, skills/prd-agent/SKILL.md
+
+Blocked/uncertain:
+- none
+
+Next:
+- Open PR, verify gates, auto-merge, and publish receipt to issue #22
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → minimum relevant spec. Checkpoint before stopping.
