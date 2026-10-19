@@ -59,6 +59,32 @@ Any newly spawned coding agent or tool can run `python -m prd_agent <path>` with
 
 No checkpoints yet.
 
+### 2026-10-19 03:55:45 UTC — Antigravity
+
+<!-- continuity:checkpoint {"agent":"Antigravity","blocked":[],"changed":["src/prd_agent/cli.py, src/prd_agent/pipeline.py, skills/prd-agent/SKILL.md, README.md, tests/test_cli.py"],"completed":["Made autonomous mode the default in cli.py and pipeline.py, adding --interactive for human flag prompting","Packaged skills/prd-agent/SKILL.md as a standardized agent skill for blind agent discovery","Updated README.md to document autonomous default and remove legacy proof table footer mentions"],"decisions":["no new decisions"],"evidence":["python -m pytest -q: 150 passed with 0 failures","continuity validate --root .: VALID"],"next_action":"Open pull request on GitHub, verify CI gates, and merge","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"PRA-0004","timestamp":"2026-10-19T03:55:45Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"4f5bd94faec01c332e23e1f6b9e94ed133a0a5dc17f7d4b4a3207f57ef6a8948","request_id":"d2cf8c3946064900af9d199682539609","schema":"project-continuity.checkpoint-operation.v1","task_id":"PRA-0004"} -->
+
+Completed:
+- Made autonomous mode the default in cli.py and pipeline.py, adding --interactive for human flag prompting
+- Packaged skills/prd-agent/SKILL.md as a standardized agent skill for blind agent discovery
+- Updated README.md to document autonomous default and remove legacy proof table footer mentions
+
+Evidence:
+- python -m pytest -q: 150 passed with 0 failures
+- continuity validate --root .: VALID
+
+Decisions:
+- no new decisions
+
+Changed:
+- src/prd_agent/cli.py, src/prd_agent/pipeline.py, skills/prd-agent/SKILL.md, README.md, tests/test_cli.py
+
+Blocked/uncertain:
+- none
+
+Next:
+- Open pull request on GitHub, verify CI gates, and merge
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → minimum relevant spec. Checkpoint before stopping.
