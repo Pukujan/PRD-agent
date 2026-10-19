@@ -73,6 +73,12 @@ def build_parser() -> argparse.ArgumentParser:
         default=False,
         help="generate the full multi-asset launch pack (copy.json, launch_thread.md, show_hn.md, pitch_deck.md)",
     )
+    parser.add_argument(
+        "--readme",
+        action="store_true",
+        default=False,
+        help="write the story directly to <artifact-path>/README.md",
+    )
     return parser
 
 def main(argv: list[str] | None = None) -> int:
@@ -99,6 +105,7 @@ def main(argv: list[str] | None = None) -> int:
             llm=llm,
             trends_file=Path(args.trends_file) if args.trends_file else None,
             out=Path(args.out) if args.out else None,
+            readme=args.readme,
             autonomous=is_autonomous,
             answers=answers_from_file(Path(args.answers_file)) if args.answers_file else None,
             live=not args.no_web,
@@ -107,6 +114,7 @@ def main(argv: list[str] | None = None) -> int:
             persona=persona_choice,
             pack=args.pack,
         )
+
     except StageError as error:
         print(f"prd-agent: {error}", file=sys.stderr)
         return 2

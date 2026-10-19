@@ -17,6 +17,7 @@ PRD-agent runs **autonomously by default**: it reads the artifact, searches the 
 
 | Flag | What it does |
 |---|---|
+| `--readme` | Write the generated story directly into `<artifact_path>/README.md` |
 | `--interactive` | Stop at open flags and prompt on stdin instead of running autonomously |
 | `--out PATH` | Where to write the story (default: `stories/<artifact-name>.md`) |
 | `--trends-file PATH` | Read `trends.json` from a file instead of running the live web pass |
@@ -27,7 +28,8 @@ PRD-agent runs **autonomously by default**: it reads the artifact, searches the 
 | `--persona PERSONA` | Target buyer persona: `solopreneur` (unicorn/builder), `enterprise` (cto/vp), `normie` (consumer/magic) |
 | `--pack` | Generate the full multi-asset launch pack under `runs/<artifact-name>/pack/` |
 
-The output in `stories/<artifact-name>.md` is pure pitch: zero audit tables, zero internal code paths, zero em dashes. Every run writes truth telemetry to `runs/<artifact-name>/claims.json`, `trends.json` and `positioning.json`, keeping verification segregated from marketing copy.
+The output in `stories/<artifact-name>.md` (or `<artifact_path>/README.md` with `--readme`) is pure pitch: zero audit tables, zero internal code paths, zero em dashes. Every run writes truth telemetry to `runs/<artifact-name>/claims.json`, `trends.json` and `positioning.json`, keeping verification segregated from marketing copy.
+
 
 ## The Hype-to-Honesty Dial
 
@@ -79,9 +81,11 @@ Messages API, so the package has zero runtime dependencies. Tests inject a fake 
 the network.
 
 ```bash
-export ANTHROPIC_API_KEY=...        # required for a real run
-export PRD_AGENT_MODEL=...          # optional model override
+export ANTHROPIC_API_KEY=...        # or HADES_LITELLM_API_KEY / OPENCODE_LITELLM_MASTER_KEY
+export ANTHROPIC_BASE_URL=...       # optional proxy endpoint (e.g. http://127.0.0.1:4000)
+export ANTHROPIC_MODEL=...          # or PRD_AGENT_MODEL (default: claude-sonnet-4-5-20250929)
 ```
+
 
 Offline, without a key, the pipeline replays canned responses:
 

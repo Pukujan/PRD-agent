@@ -98,6 +98,26 @@ def test_clean_body_ignores_an_unknown_need_kind() -> None:
     assert "[NEED:" not in body
     assert harvested == []
 
+
+def test_clean_body_purges_em_dashes_and_double_hyphens() -> None:
+    raw = (
+        "# Headline \u2014 With Unicode Em Dash\n\n"
+        "Here is a sentence \u2013 with an en dash.\n\n"
+        "Another sentence -- with an ascii em dash.\n\n"
+        "Word--word without spaces.\n\n"
+        "```bash\npython -m prd_agent --readme\n```\n\n"
+        "---\n\n"
+        "Final note.\n"
+    )
+    body, _ = story.clean_body(raw)
+    assert "\u2014" not in body
+    assert "\u2013" not in body
+    assert " -- " not in body
+    assert "Word--word" not in body
+    assert "python -m prd_agent --readme" in body
+    assert "---\n" in body
+
+
 def test_the_footer_is_built_from_the_json_not_from_the_model(pcm_run: Path) -> None:
     claims, positioning = load(pcm_run / "claims.json"), load(pcm_run / "positioning.json")
     trends = load(pcm_run / "trends.json")
