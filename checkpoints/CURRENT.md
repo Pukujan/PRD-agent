@@ -1,6 +1,6 @@
 # Current Repository Checkpoint
 
-<!-- continuity:current {"active_task":"PRA-0012","active_task_file":"tasks/TASK-PRA-0012-universal-repo-pointing.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 This is an as-of projection; live GitHub issues own progression. Link the owning leaf, parent ancestry and dependencies for active work.
 
@@ -23,10 +23,11 @@ Phase: bootstrap.
 - `PRA-0009`: Automated runner discovery (proxy URL normalization, API key fallback, and model fallback), em-dash auto-sanitization before gating, and `--readme` direct output writing. Merged via PR #23 (commit `75cd81a`). Issue #22 closed.
 - `PRA-0010`: Armed repository maintenance gates with strict type checking (mypy 0 errors), import sorting and linting (ruff 0 errors), and `.continuity/documents.json` inventory tracking. Implemented the dynamic belief inversion engine (`false_dogma`, `rebellion_belief`, and `weaponized_mechanisms`) with 5-Beat Manifesto generation across story and launch pack. Merged via PR #25 (commit `43f9541`). Issue #24 closed.
 - `PRA-0011`: Consolidated the narrative engine by fusing the hype dial and 4-step belief inversion into a single Tension Spine + Manifesto Voice architecture (`src/prd_agent/voice.py`). Enforced anti-leakage and anti-template gates in `checks.py` and `story.py`, wired the 5-Line Executive Battle Cry directly to stdout in `cli.py` and file output in `pipeline.py`, added root `PROMPT.md` for blind agent chat inoculation, and passed the hidden holdout test on `turbofit` (200/200 tests passing, 0 mypy errors, 0 ruff errors). Merged via PR #27 (commit `dfd4f9d`). Issue #26 closed.
+- `PRA-0012`: Enabled pointing any repository directly to PRD-agent via remote Git/GitHub URL intake (`src/prd_agent/remote.py`), CLI and pipeline destination routing to caller workspaces, and composite GitHub Action `action.yml` for zero-setup CI/CD execution. Merged via PR #29 (commit `f5fce8d`). Issue #28 closed.
 
 ## Active
 
-- Task `PRA-0012`: Enable pointing any repository directly to PRD-agent via remote URL intake and GitHub Action. Lineage: leaf https://github.com/Pukujan/PRD-agent/issues/28, parent: none. Branch: `task/PRA-0012-universal-repo-pointing`.
+None.
 
 ## Queued
 
@@ -38,7 +39,7 @@ None known.
 
 ## Next atomic action
 
-Confirm the `gates` check on the PR and merge.
+None. All scheduled tasks complete. Ready for new task direction.
 
 
 
