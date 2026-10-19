@@ -56,6 +56,33 @@ PRD-agent will reliably ingest large repositories without blowing model output t
 
 No checkpoints yet.
 
+### 2026-10-19 04:02:52 UTC — Antigravity
+
+<!-- continuity:checkpoint {"agent":"Antigravity","blocked":[],"changed":["src/prd_agent/intake.py, src/prd_agent/llm.py, tests/test_intake.py, tests/test_llm.py, tasks/TASK-PRA-0005-intake-token-ceiling.md, checkpoints/CURRENT.md"],"completed":["Added claim ceiling and brevity guidelines (12-18 claims) to intake.py","Supported PRD_AGENT_MAX_TOKENS environment variable in llm.py","Implemented salvage_json helper in llm.py for partial JSON stream truncation recovery","Added tests for claim ceiling, env max tokens, and JSON salvage in test_intake.py and test_llm.py (155 tests passing)"],"decisions":["no new decisions"],"evidence":["python -m pytest -q: 155 passed","continuity validate --root .: VALID"],"next_action":"Open pull request for Issue #10, verify CI, and squash merge","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"PRA-0005","timestamp":"2026-10-19T04:02:52Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"68de845ca478c7b95cd84e491b6e25e5005adc59e6a86c3a882303ea0bec1e2b","request_id":"9bd2b461dde5487ab835071793a3f040","schema":"project-continuity.checkpoint-operation.v1","task_id":"PRA-0005"} -->
+
+Completed:
+- Added claim ceiling and brevity guidelines (12-18 claims) to intake.py
+- Supported PRD_AGENT_MAX_TOKENS environment variable in llm.py
+- Implemented salvage_json helper in llm.py for partial JSON stream truncation recovery
+- Added tests for claim ceiling, env max tokens, and JSON salvage in test_intake.py and test_llm.py (155 tests passing)
+
+Evidence:
+- python -m pytest -q: 155 passed
+- continuity validate --root .: VALID
+
+Decisions:
+- no new decisions
+
+Changed:
+- src/prd_agent/intake.py, src/prd_agent/llm.py, tests/test_intake.py, tests/test_llm.py, tasks/TASK-PRA-0005-intake-token-ceiling.md, checkpoints/CURRENT.md
+
+Blocked/uncertain:
+- none
+
+Next:
+- Open pull request for Issue #10, verify CI, and squash merge
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → minimum relevant spec. Checkpoint before stopping.
