@@ -44,10 +44,10 @@
 ## PRD-agent Project Contract (`project`)
 
 - File: [`PROJECT.md`](../PROJECT.md)
-- Local content status: **CURRENT**
+- Local content status: **NEEDS_REVIEW**
 - Last reviewed at commit: `ef83e6e9ddf4481eb997e540ecf759a2c7c182fb`
 - Reviewed SHA-256: `2b4efb1b5c6674e91b4891bcc94e4e979c82f7ee5aa5fdb6d1196df9e2fcef62`
-- Current SHA-256: `2b4efb1b5c6674e91b4891bcc94e4e979c82f7ee5aa5fdb6d1196df9e2fcef62`
+- Current SHA-256: `faf4d3fd25057cc22a7dd155f4806831952bf6a106d478c06f0f567948432d32`
 - Summary: Project goals, non-goals, and progression governance
 - Search terms: none
 - Neighboring records: none
