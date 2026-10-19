@@ -88,6 +88,35 @@ artifact repo -> claims.json -> trends.json -> positioning.json -> story.md
 
 ## Operating Principles for Agents
 
-1. **Story First, Feature Later:** Never open with technical architecture or feature lists. Ground the reader in their own relatable nightmare first.
-2. **Zero Audit Clutter:** Proof tables, test lists, and file paths belong exclusively in `runs/`, never in `stories/`.
-3. **Zero Em Dashes:** Double-hyphens (`--`) and em dashes in short copy are hard banned by the machine checker. Use periods or commas.
+### Mode A: Tool-Equipped Agent (With Terminal Access)
+Always invoke the deterministic pipeline directly:
+```bash
+python -m prd_agent <path-to-target-repo> --readme --hype 1000 --persona solopreneur --pack
+```
+
+### Mode B: Blind Agent Direct Generation Protocol (Chat / Prompt Mode)
+When answering directly in chat without terminal tool access, follow this strict conversion manifesto standard:
+
+#### 1. Hard Bans (Zero Tolerance)
+- **Zero Meta-Label Leakage:** NEVER print prompt directives like `Level 1000, solopreneur, belief inversion:`, `Beat 1:`, or `Hypothesis:`. The reader must see 100% pure consumer-facing marketing copy.
+- **Zero Template Starters:** NEVER write `"The false dogma says..."` or `"The cultural enemy is..."`. Instead, attack the status quo directly with an assertive declaration (e.g. *"Stop renting your brain from a cloud API at 3 cents a query."*).
+- **Zero Alphabet-Soup Walls of Text:** NEVER dump a list of 5 raw model names, quant codes, or internal class names (`PolyStrata, SALT-core, Qwen 3.8 27B GSQ-RCO at 262K context...`) into an unformatted, monolithic run-on paragraph.
+- **Zero Monolithic Text Blocks:** Every section MUST have ample whitespace. Paragraphs are strictly 1 to 3 sentences maximum. Use bolding and bullet points to create visual rhythm.
+- **Zero Em-Dashes:** No `—`, `–`, or `--`. Use periods or commas.
+
+#### 2. Feature Weaponization Rule
+Translate every raw code mechanism into a human superpower:
+- *Boring Code Audit:* "It audits PolyStrata and SALT-core against the model pair to select Qwen 3.8 27B GSQ-RCO IQ3_S."
+- *Weaponized Manifesto:* "Zero mathematical degradation. A 27-billion parameter frontier reasoning model squeezed into 12 gigabytes of local VRAM, firing at 200 tokens per second while drawing less power than a desk lamp."
+- *Boring Code Audit:* "Live Adaptation context shedding and quant swapping when GPU memory gets crowded."
+- *Weaponized Manifesto:* "Zero out-of-memory crashes. When memory spikes, the engine hot-swaps precision on the fly, healing back to full fidelity the millisecond overhead clears."
+
+#### 3. The 5-Beat Architectural Blueprint
+Every narrative MUST be formatted with markdown headings and clean spacing:
+1. `# [Magnetic Hero Headline]` — Punchy, thumb-stopping cultural declaration.
+2. `**[Subheadline]**` — The radical transformation in 1-2 clear sentences.
+3. `## The Token Tollbooth` — Attack the status quo: bill shock, latency, cloud outages, rate limits, and lost sovereignty.
+4. `## The 2:00 AM Nightmare` — The visceral human frustration of fighting broken configurations, OOM errors, and opaque bills.
+5. `## The Sovereign Reality (The Flying Car)` — The transformed future: solo builders with 100x leverage, offline execution, and uncapped local horsepower.
+6. `## The Machine Under the Hood` — The weaponized mechanisms that make this mathematically guaranteed.
+7. `## Take the Wheel` — A direct, immediate call to action.

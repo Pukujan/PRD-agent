@@ -68,10 +68,10 @@
 ## PRD-agent Skill Guide (`skill`)
 
 - File: [`skills/prd-agent/SKILL.md`](../skills/prd-agent/SKILL.md)
-- Local content status: **CURRENT**
+- Local content status: **NEEDS_REVIEW**
 - Last reviewed at commit: `ef83e6e9ddf4481eb997e540ecf759a2c7c182fb`
 - Reviewed SHA-256: `caea1a62b5c393920e46bc79888ac8ec16620ac490ea6a45474adfe9f427accf`
-- Current SHA-256: `caea1a62b5c393920e46bc79888ac8ec16620ac490ea6a45474adfe9f427accf`
+- Current SHA-256: `ae54629efaf35537df6ed331a39a85d23483b1b2a9236d4a4fcc0ca222977d02`
 - Summary: Agent discovery and operating reference for PRD-agent
 - Search terms: none
 - Neighboring records: none
