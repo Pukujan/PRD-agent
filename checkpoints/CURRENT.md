@@ -1,6 +1,6 @@
 # Current Repository Checkpoint
 
-<!-- continuity:current {"active_task":"PRA-0009","active_task_file":"tasks/TASK-PRA-0009-automated-runner.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 This is an as-of projection; live GitHub issues own progression. Link the owning leaf, parent ancestry and dependencies for active work.
 
@@ -20,10 +20,11 @@ Phase: bootstrap.
 - `PRA-0006`: Handled raw text search snippets from proxy providers during trends analysis with automated secondary synthesis, and supported `PRD_AGENT_NO_SEARCH_TOOL` tool suppression. Merged via PR #17 (commit `6608311`). Issue #11 closed.
 - `PRA-0007`: Added 4-tier Hype-to-Honesty Dial with interactive pre-generation calibration (Level 1000, 750, 500, 250), CLI `--hype` flag, and prompt injection. Merged via PR #19 (commit `51bbc4d`). Issue #18 closed.
 - `PRA-0008`: Added audience persona targeting (solopreneur, enterprise, normie) and multi-asset launch pack generation (copy.json, launch_thread.md, show_hn.md, pitch_deck.md) under runs/<name>/pack/. Merged via PR #21 (commit `d901318`). Issue #20 closed.
+- `PRA-0009`: Automated runner discovery (proxy URL normalization, API key fallback, and model fallback), em-dash auto-sanitization before gating, and `--readme` direct output writing. Merged via PR #23 (commit `75cd81a`). Issue #22 closed.
 
 ## Active
 
-- Task `PRA-0009`: Automate runner discovery, em-dash sanitization, and direct readme output. Lineage: leaf https://github.com/Pukujan/PRD-agent/issues/22, parent: none. Branch: `task/PRA-0009-automated-runner`.
+None.
 
 ## Queued
 
@@ -35,5 +36,6 @@ None known.
 
 ## Next atomic action
 
-Commit product and docs, run continuity checkpoint, push branch, open PR, verify gates, merge, and post issue receipt to #22.
+Run turnkey automation on target repositories or await direction.
+
 
