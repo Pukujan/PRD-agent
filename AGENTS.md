@@ -42,6 +42,19 @@ Store checkout roots only in the private per-device registry with `continuity wo
 
 Work only inside the active bounded task. Split or revise the task before materially expanding scope.
 
+## Layer ownership
+
+PRD-agent is the marketing pipeline. It owns `stories/`, the `runs/<name>/pack/`
+launch assets, and a target repository's `README.md` when a run is invoked with
+`--readme`. CGM (`content-generation-modules`) owns GitHub and development prose:
+issue, pull request, issue-log, receipt, and commit text, non-README docs,
+changelog prose, HTML reports, and any README not written by a `--readme` run.
+
+Using PRD-agent is a full replacement, not an addition. When PRD-agent generates
+a surface, CGM is not routed for that surface: its always-on writing inject does
+not apply, and CGM's router must not name or invoke PRD-agent. The methods
+conflict by design. See `PROJECT.md` → "Layer ownership".
+
 ## Workspace mode: managed task worktrees
 
 The Git repository, remote, and task history stay canonical; the main checkout remains the permanent home base. The project folder holds the canonical checkout at `<project>/main`; use it for sequential work. Create a linked worktree only when parallel work or isolation is actually useful, at `<project>/worktrees/<TASK-ID>`, beside the checkout. Use one per independent active task, not one per session or agent; a new session continuing that task resumes the same tree. Do not create sibling clones, worktrees inside the checkout, or arbitrary worktree paths; a stray worktree in the dev root or inside `<project>/main` fails `continuity validate`.
