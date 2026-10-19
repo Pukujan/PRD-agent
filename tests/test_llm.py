@@ -90,8 +90,9 @@ def test_complete_does_not_retry_a_client_error(monkeypatch) -> None:
 
 def test_default_llm_requires_a_key(monkeypatch) -> None:
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
-    monkeypatch.delenv("HADES_LITELLM_API_KEY", raising=False)
-    monkeypatch.delenv("OPENCODE_LITELLM_MASTER_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("PRD_AGENT_API_KEY", raising=False)
+    monkeypatch.delenv("PRD_AGENT_PROVIDER", raising=False)
     monkeypatch.delenv("PRD_AGENT_LLM", raising=False)
     with pytest.raises(llm.LLMUnavailable):
         llm.default_llm()
@@ -106,18 +107,27 @@ def test_normalize_anthropic_url() -> None:
     assert llm.normalize_anthropic_url("") == llm.ANTHROPIC_URL
 
 
-def test_default_llm_falls_back_to_proxy_keys(monkeypatch) -> None:
+def test_default_llm_ignores_proxy_keys(monkeypatch) -> None:
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("PRD_AGENT_API_KEY", raising=False)
+    monkeypatch.delenv("PRD_AGENT_PROVIDER", raising=False)
     monkeypatch.delenv("PRD_AGENT_LLM", raising=False)
     monkeypatch.setenv("HADES_LITELLM_API_KEY", "hades-key")
-    client = llm.default_llm()
-    assert isinstance(client, llm.AnthropicHTTPLLM)
-    assert client.api_key == "hades-key"
-
-    monkeypatch.delenv("HADES_LITELLM_API_KEY", raising=False)
     monkeypatch.setenv("OPENCODE_LITELLM_MASTER_KEY", "master-key")
-    client2 = llm.default_llm()
-    assert client2.api_key == "master-key"
+    with pytest.raises(llm.LLMUnavailable):
+        llm.default_llm()
+
+
+def test_default_llm_never_reads_an_openrouter_key(monkeypatch) -> None:
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.delenv("PRD_AGENT_API_KEY", raising=False)
+    monkeypatch.delenv("PRD_AGENT_PROVIDER", raising=False)
+    monkeypatch.delenv("PRD_AGENT_LLM", raising=False)
+    monkeypatch.setenv("OPENROUTER_API_KEY", "openrouter-key")
+    with pytest.raises(llm.LLMUnavailable):
+        llm.default_llm()
 
 
 def test_default_llm_normalizes_base_url_from_env(monkeypatch) -> None:
@@ -172,6 +182,114 @@ def test_default_llm_respects_max_tokens_env_var(monkeypatch) -> None:
     client = llm.default_llm()
     assert isinstance(client, llm.AnthropicHTTPLLM)
     assert client.max_tokens == 4096
+
+
+def test_openai_request_uses_bearer_auth_and_chat_completions() -> None:
+    client = llm.OpenAIHTTPLLM(model="m", api_key="k")
+    url, headers, body = client.build_request(system="sys", prompt="hi")
+    assert url.endswith("/v1/chat/completions")
+    assert headers["authorization"] == "Bearer k"
+    assert "x-api-key" not in headers
+    payload = json.loads(body)
+    assert payload["messages"] == [
+        {"role": "system", "content": "sys"},
+        {"role": "user", "content": "hi"},
+    ]
+    assert "tools" not in payload
+
+
+def test_openai_complete_reads_the_assistant_message(monkeypatch) -> None:
+    client = llm.OpenAIHTTPLLM(model="m", api_key="k")
+
+    class Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def read(self) -> bytes:
+            return json.dumps({"choices": [{"message": {"content": "hello"}}]}).encode()
+
+    monkeypatch.setattr(llm.urllib.request, "urlopen", lambda request, timeout: Response())
+    assert client.complete(system="s", prompt="p") == "hello"
+
+
+def test_openai_complete_reads_content_parts(monkeypatch) -> None:
+    client = llm.OpenAIHTTPLLM(model="m", api_key="k")
+
+    class Response:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *exc):
+            return False
+
+        def read(self) -> bytes:
+            return json.dumps(
+                {"choices": [{"message": {"content": [{"type": "text", "text": "part one"}]}}]}
+            ).encode()
+
+    monkeypatch.setattr(llm.urllib.request, "urlopen", lambda request, timeout: Response())
+    assert client.complete(system="s", prompt="p") == "part one"
+
+
+def test_default_llm_selects_openai_from_its_key(monkeypatch) -> None:
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("PRD_AGENT_API_KEY", raising=False)
+    monkeypatch.delenv("PRD_AGENT_PROVIDER", raising=False)
+    monkeypatch.delenv("PRD_AGENT_LLM", raising=False)
+    monkeypatch.setenv("OPENAI_API_KEY", "openai-key")
+    client = llm.default_llm()
+    assert isinstance(client, llm.OpenAIHTTPLLM)
+    assert client.api_key == "openai-key"
+
+
+def test_explicit_provider_beats_an_ambient_key(monkeypatch) -> None:
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "anthropic-key")
+    monkeypatch.setenv("OPENAI_API_KEY", "openai-key")
+    monkeypatch.setenv("PRD_AGENT_PROVIDER", "openai")
+    client = llm.default_llm()
+    assert isinstance(client, llm.OpenAIHTTPLLM)
+
+
+def test_unknown_provider_is_rejected(monkeypatch) -> None:
+    monkeypatch.setenv("PRD_AGENT_PROVIDER", "openrouter")
+    with pytest.raises(llm.LLMUnavailable):
+        llm.default_llm()
+
+
+def test_explicit_arguments_override_the_environment(monkeypatch) -> None:
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "env-key")
+    monkeypatch.setenv("ANTHROPIC_BASE_URL", "http://env.example")
+    monkeypatch.setenv("PRD_AGENT_MODEL", "env-model")
+    client = llm.default_llm(
+        provider="openai",
+        api_key="flag-key",
+        base_url="http://flag.example",
+        model="flag-model",
+    )
+    assert isinstance(client, llm.OpenAIHTTPLLM)
+    assert client.api_key == "flag-key"
+    assert client.base_url == "http://flag.example/v1/chat/completions"
+    assert client.model == "flag-model"
+
+
+def test_generic_key_works_with_an_explicit_provider(monkeypatch) -> None:
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    monkeypatch.setenv("PRD_AGENT_API_KEY", "generic-key")
+    monkeypatch.setenv("PRD_AGENT_PROVIDER", "openai")
+    client = llm.default_llm()
+    assert client.api_key == "generic-key"
+
+
+def test_normalize_openai_url() -> None:
+    assert llm.normalize_openai_url("http://127.0.0.1:4000") == "http://127.0.0.1:4000/v1/chat/completions"
+    assert llm.normalize_openai_url("http://127.0.0.1:4000/") == "http://127.0.0.1:4000/v1/chat/completions"
+    assert llm.normalize_openai_url("http://127.0.0.1:4000/v1") == "http://127.0.0.1:4000/v1/chat/completions"
+    assert llm.normalize_openai_url("https://api.openai.com/v1/chat/completions") == "https://api.openai.com/v1/chat/completions"
+    assert llm.normalize_openai_url("") == llm.OPENAI_URL
 
 
 def test_extract_json_salvages_truncated_stream() -> None:

@@ -91,13 +91,17 @@ The artifact's own claims, so the search is aimed at the right category:
 Today is {searched_at}.
 """
 
-def search_tools() -> list[dict]:
+def search_tools(client: LLM | None = None) -> list[dict]:
     """The provider-side search tool attached to the one call.
 
-    Can be suppressed via PRD_AGENT_NO_SEARCH_TOOL=1 for proxy environments
-    that do not support custom server-side tool definitions.
+    Only the Anthropic Messages API accepts this server-side tool. [OI]-compatible
+    chat endpoints have no equivalent, so they run the trends pass without live search
+    unless the caller supplies --trends-file. Can be suppressed for every provider with
+    PRD_AGENT_NO_SEARCH_TOOL=1.
     """
     if os.environ.get("PRD_AGENT_NO_SEARCH_TOOL", "").strip().lower() in ("1", "true", "yes"):
+        return []
+    if getattr(client, "supports_web_search", True) is False:
         return []
     return [WEB_SEARCH_TOOL]
 
@@ -152,7 +156,7 @@ def analyze(claims: dict, client: LLM, *, searched_at: str | None = None) -> dic
     raw = client.complete(
         system=TRENDS_SYSTEM,
         prompt=trends_prompt,
-        tools=search_tools(),
+        tools=search_tools(client),
     )
     try:
         doc = extract_json(raw)

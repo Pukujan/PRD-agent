@@ -40,13 +40,19 @@ python -m prd_agent <path-to-target-repo>
 | `--hype LEVEL` | `1000` | Narrative calibration dial: 1000 (electric), 750 (venture), 500 (balanced), 250 (truth) |
 | `--persona PERSONA` | `solopreneur` | Audience persona: solopreneur (unicorn), enterprise (cto/vp), normie (consumer/magic) |
 | `--pack` | `False` | Generate the full multi-asset launch pack under runs/<name>/pack/ |
+| `--provider PROVIDER` | *(detected)* | `anthropic` or `openai` |
+| `--api-key KEY` | `None` | Provider API key, overriding the environment |
+| `--base-url URL` | `None` | Provider base URL, overriding `PRD_AGENT_BASE_URL` |
+| `--model ID` | *(provider default)* | Model id, overriding `PRD_AGENT_MODEL` |
 
-## Turnkey Runner & Proxy Auto-Discovery
+## Turnkey Runner & Provider Discovery
 
 PRD-agent is built for autonomous execution across developer and agent workflows:
-- **Proxy Auto-Discovery:** If `ANTHROPIC_BASE_URL` points to a local proxy (such as LiteLLM at `http://127.0.0.1:4000`), it automatically normalizes the path to `/v1/messages`.
-- **Key Fallback:** Auto-discovers `HADES_LITELLM_API_KEY` or `OPENCODE_LITELLM_MASTER_KEY` when `ANTHROPIC_API_KEY` is not explicitly set.
-- **Model Fallback:** Honors `ANTHROPIC_MODEL` when `PRD_AGENT_MODEL` is unset.
+- **Two First-Class Providers:** Anthropic Messages API and [OI] Chat Completions (including [OI]-compatible endpoints).
+- **Provider Detection:** `PRD_AGENT_PROVIDER` selects the provider; when unset, the key that is present decides.
+- **Single Key Contract:** Reads only the selected provider's key (`ANTHROPIC_API_KEY` or `OPENAI_API_KEY`) or the generic `PRD_AGENT_API_KEY`. No proxy, aggregator, or editor-specific key fallbacks; the driving agent owns credential selection.
+- **Base URL Normalization:** `PRD_AGENT_BASE_URL` (or the provider-specific variable) is normalized to the provider's endpoint path.
+- **Model Fallback:** Honors `ANTHROPIC_MODEL` / `OPENAI_MODEL` when `PRD_AGENT_MODEL` is unset.
 - **Em-Dash Auto-Purge:** Automatically sanitizes em-dashes and double-hyphens before gating so model drafts never fail on punctuation alone.
 
 

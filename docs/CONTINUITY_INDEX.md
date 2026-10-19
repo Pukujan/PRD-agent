@@ -59,7 +59,7 @@
 - Local content status: **NEEDS_REVIEW**
 - Last reviewed at commit: `ef83e6e9ddf4481eb997e540ecf759a2c7c182fb`
 - Reviewed SHA-256: `316468fc7d7fda56042302c0a8f534df18aaa25032001e6d97b4f6bdc87095cc`
-- Current SHA-256: `7156a716f3a06a4be7ce87947a589594dccc58984a84ff13d555c6bc1cc9928d`
+- Current SHA-256: `2fafb29606b1464eeac4b002d1b6b0901c58c3145d259f404da648b10f711b16`
 - Summary: Main product overview and autonomous pipeline usage
 - Search terms: none
 - Neighboring records: none
@@ -71,7 +71,7 @@
 - Local content status: **NEEDS_REVIEW**
 - Last reviewed at commit: `ef83e6e9ddf4481eb997e540ecf759a2c7c182fb`
 - Reviewed SHA-256: `caea1a62b5c393920e46bc79888ac8ec16620ac490ea6a45474adfe9f427accf`
-- Current SHA-256: `494c83d1c9f0deb099e3c97809e6b14e63a66915784aa7a820669f068ff608aa`
+- Current SHA-256: `3338bc44a32ed25b8593574f7df3ed5b437f77903b7c0739177895eaeae6472f`
 - Summary: Agent discovery and operating reference for PRD-agent
 - Search terms: none
 - Neighboring records: none
