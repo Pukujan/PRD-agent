@@ -1,6 +1,6 @@
 # Current Repository Checkpoint
 
-<!-- continuity:current {"active_task":"PRA-0006","active_task_file":"tasks/TASK-PRA-0006-trends-proxy-synthesis.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 This is an as-of projection; live GitHub issues own progression. Link the owning leaf, parent ancestry and dependencies for active work.
 
@@ -17,12 +17,11 @@ Phase: bootstrap.
 - `PRA-0003`: Enforced story-first dream creation, anti-audit machine gates, em-dash bans, cultural zeitgeist hunting, nightmare/dream scene requirements, and clean gold standard `stories/acs-hot-loader.md`. Merged via PR #13 (commit `b15b913`). Issue #12 closed.
 - `PRA-0004`: Defaulted to autonomous execution, packaged `skills/prd-agent/SKILL.md` for blind agent discovery, and synced README. Merged via PR #15 (commit `3a6d257`). Issue #14 closed.
 - `PRA-0005`: Bound intake claim extraction (12-18 claims) and added truncation salvage in `salvage_json()`. Merged via PR #16 (commit `4abc083`). Issue #10 closed.
+- `PRA-0006`: Handled raw text search snippets from proxy providers during trends analysis with automated secondary synthesis, and supported `PRD_AGENT_NO_SEARCH_TOOL` tool suppression. Merged via PR #17 (commit `6608311`). Issue #11 closed.
 
 ## Active
 
-- `PRA-0006`: Handle raw text search snippets from proxy providers during trends analysis.
-  - Leaf issue: https://github.com/Pukujan/PRD-agent/issues/11
-  - Branch: `task/PRA-0006-trends-proxy-synthesis`
+- None (all current tasks and queued issues complete). Most recent task: PRA-0006 (completed).
 
 ## Queued
 
@@ -34,4 +33,4 @@ None known.
 
 ## Next atomic action
 
-Open pull request for PRA-0006 (Issue #11), verify CI passes, and squash merge.
+Await user direction or new feature milestones.

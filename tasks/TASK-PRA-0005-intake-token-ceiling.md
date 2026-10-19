@@ -1,8 +1,8 @@
 # TASK-PRA-0005 — Intake Token Ceiling
 
-<!-- continuity:task {"acceptance":["Add claim count ceiling and brevity guidelines to intake prompt (12-18 distinctive claims, concise text and notes)","Allow max_tokens configuration via PRD_AGENT_MAX_TOKENS environment variable in llm.py","Implement robust partial-JSON salvage in extract_json() when JSON is truncated mid-stream","Unit tests for claim ceiling instruction and truncated JSON salvage in tests/test_intake.py and tests/test_llm.py","All unit and integration tests passing"],"depends_on":[],"goal":"Bound intake claim extraction and add truncation resilience to extract_json","id":"PRA-0005","issue_url":"https://github.com/Pukujan/PRD-agent/issues/10","next_action":"Checkpoint and open pull request","owner":"Pukujan","priority":"P1","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"active","why":"Large repository artifacts exhaust model output tokens during intake, causing truncated JSON to fail the run"} -->
+<!-- continuity:task {"acceptance":["Add claim count ceiling and brevity guidelines to intake prompt (12-18 distinctive claims, concise text and notes)","Allow max_tokens configuration via PRD_AGENT_MAX_TOKENS environment variable in llm.py","Implement robust partial-JSON salvage in extract_json() when JSON is truncated mid-stream","Unit tests for claim ceiling instruction and truncated JSON salvage in tests/test_intake.py and tests/test_llm.py","All unit and integration tests passing"],"depends_on":[],"goal":"Bound intake claim extraction and add truncation resilience to extract_json","id":"PRA-0005","issue_url":"https://github.com/Pukujan/PRD-agent/issues/10","next_action":"Delivered via PR #16","owner":"Pukujan","priority":"P1","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"completed","why":"Large repository artifacts exhaust model output tokens during intake, causing truncated JSON to fail the run"} -->
 
-- Status: active
+- Status: completed
 - Owner: Pukujan
 - Priority: P1
 - Depends on: none

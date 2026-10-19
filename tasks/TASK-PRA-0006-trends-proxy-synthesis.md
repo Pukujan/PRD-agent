@@ -1,8 +1,8 @@
 # TASK-PRA-0006 — Trends Proxy Synthesis
 
-<!-- continuity:task {"acceptance":["Detect when trends search returns raw search snippets rather than JSON and run secondary synthesis call with search context","Secondary synthesis call passes tools=None to prevent recursive search loops","Allow disabling web search tool definition via PRD_AGENT_NO_SEARCH_TOOL environment variable for proxy decoupling","Unit tests verifying snippet detection, secondary synthesis call, and search tool disablement in tests/test_trends.py","All unit and integration tests passing"],"depends_on":[],"goal":"Handle raw text search snippets from proxy providers during trends analysis","id":"PRA-0006","issue_url":"https://github.com/Pukujan/PRD-agent/issues/11","next_action":"Checkpoint and open pull request","owner":"Pukujan","priority":"P1","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"active","why":"Proxy providers return search text blocks rather than JSON, failing extract_json"} -->
+<!-- continuity:task {"acceptance":["Detect when trends search returns raw search snippets rather than JSON and run secondary synthesis call with search context","Secondary synthesis call passes tools=None to prevent recursive search loops","Allow disabling web search tool definition via PRD_AGENT_NO_SEARCH_TOOL environment variable for proxy decoupling","Unit tests verifying snippet detection, secondary synthesis call, and search tool disablement in tests/test_trends.py","All unit and integration tests passing"],"depends_on":[],"goal":"Handle raw text search snippets from proxy providers during trends analysis","id":"PRA-0006","issue_url":"https://github.com/Pukujan/PRD-agent/issues/11","next_action":"Delivered via PR #17","owner":"Pukujan","priority":"P1","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"completed","why":"Proxy providers return search text blocks rather than JSON, failing extract_json"} -->
 
-- Status: active
+- Status: completed
 - Owner: Pukujan
 - Priority: P1
 - Depends on: none
