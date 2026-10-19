@@ -1,0 +1,71 @@
+{
+  "documents": [
+    {
+      "id": "corpus-seam",
+      "keywords": [],
+      "path": "docs/CORPUS_SEAM.md",
+      "related": [],
+      "reviewed_commit": "ef83e6e9ddf4481eb997e540ecf759a2c7c182fb",
+      "reviewed_sha256": "b6a27b6dd7a7225b1cae3ad3bfed68a5a24217e735fa0228cfc5186c92d19ad2",
+      "summary": "Documentation for offline and retrieved marketing trends corpus",
+      "tasks": [],
+      "title": "Corpus Seam Specification"
+    },
+    {
+      "id": "current",
+      "keywords": [],
+      "path": "checkpoints/CURRENT.md",
+      "related": [],
+      "reviewed_commit": "uncommitted",
+      "reviewed_sha256": "1136600cca166f326b6f54de42aaafe9bf34c3df9ac5e697d1a2273a1b6b1321",
+      "summary": "Active task projection and completed milestone log",
+      "tasks": [],
+      "title": "Current Repository Checkpoint"
+    },
+    {
+      "id": "first-target",
+      "keywords": [],
+      "path": "docs/FIRST_TARGET.md",
+      "related": [],
+      "reviewed_commit": "ef83e6e9ddf4481eb997e540ecf759a2c7c182fb",
+      "reviewed_sha256": "33d27c44bf1bbb6ee264c6971b4ae2b8fca9cf0c95b8a605c9a6d9f5c2b0fd23",
+      "summary": "Calibration run against the owner ACS hot-loader artifact",
+      "tasks": [],
+      "title": "First Target Calibration"
+    },
+    {
+      "id": "project",
+      "keywords": [],
+      "path": "PROJECT.md",
+      "related": [],
+      "reviewed_commit": "ef83e6e9ddf4481eb997e540ecf759a2c7c182fb",
+      "reviewed_sha256": "2b4efb1b5c6674e91b4891bcc94e4e979c82f7ee5aa5fdb6d1196df9e2fcef62",
+      "summary": "Project goals, non-goals, and progression governance",
+      "tasks": [],
+      "title": "PRD-agent Project Contract"
+    },
+    {
+      "id": "readme",
+      "keywords": [],
+      "path": "README.md",
+      "related": [],
+      "reviewed_commit": "ef83e6e9ddf4481eb997e540ecf759a2c7c182fb",
+      "reviewed_sha256": "316468fc7d7fda56042302c0a8f534df18aaa25032001e6d97b4f6bdc87095cc",
+      "summary": "Main product overview and autonomous pipeline usage",
+      "tasks": [],
+      "title": "PRD-agent README"
+    },
+    {
+      "id": "skill",
+      "keywords": [],
+      "path": "skills/prd-agent/SKILL.md",
+      "related": [],
+      "reviewed_commit": "ef83e6e9ddf4481eb997e540ecf759a2c7c182fb",
+      "reviewed_sha256": "caea1a62b5c393920e46bc79888ac8ec16620ac490ea6a45474adfe9f427accf",
+      "summary": "Agent discovery and operating reference for PRD-agent",
+      "tasks": [],
+      "title": "PRD-agent Skill Guide"
+    }
+  ],
+  "schema": "project-continuity.documents.v1"
+}

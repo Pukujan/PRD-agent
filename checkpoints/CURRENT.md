@@ -1,6 +1,6 @@
 # Current Repository Checkpoint
 
-<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":"PRA-0010","active_task_file":"tasks/TASK-PRA-0010-repo-integrity-and-belief-inversion.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 This is an as-of projection; live GitHub issues own progression. Link the owning leaf, parent ancestry and dependencies for active work.
 
@@ -24,7 +24,7 @@ Phase: bootstrap.
 
 ## Active
 
-None.
+- Task `PRA-0010`: Arm repository maintenance gates (mypy, ruff, documents inventory) and build the dynamic belief inversion engine. Lineage: leaf https://github.com/Pukujan/PRD-agent/issues/24, parent: none. Branch: `task/PRA-0010-repo-integrity-and-belief-inversion`.
 
 ## Queued
 
@@ -36,6 +36,7 @@ None known.
 
 ## Next atomic action
 
-Run turnkey automation on target repositories or await direction.
+Commit product and docs, create pull request, verify CI checks, and merge.
+
 
 

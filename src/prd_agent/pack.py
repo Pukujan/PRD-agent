@@ -14,9 +14,9 @@ Enforces:
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import dataclass
 from pathlib import Path
-import re
 from typing import Any
 
 from prd_agent.hype import get_hype_tier
@@ -119,13 +119,13 @@ LAUNCH_THREAD_PROMPT = """\
 Write a viral 6-8 tweet launch thread for this product.
 
 Thread Structure:
-- 1/7: The Pattern Interrupt / Controversial Hook (Attack the status quo)
-- 2/7: The 3:00 AM Nightmare (The specific pain that forced this to be built)
-- 3/7: The Lie (Why current market tools and incumbents fail)
-- 4/7: The Architectural Shift (The secret weapon / core invention)
+- 1/7: The Pattern Interrupt / Call out the Cultural Enemy & False Dogma (Declare war on the status quo)
+- 2/7: The Visceral Nightmare (The exhausting reality and pain that forced this to be built)
+- 3/7: The Rebellion Belief (The sovereign counter-truth: user in command, supersonic leverage)
+- 4/7: The Code Shield / Weaponized Mechanisms (The exact architectural mechanisms that guarantee this)
 - 5/7: The 3 Core Superpowers (Concrete capabilities, not generic fluff)
 - 6/7: The Proof / Benchmarks (Real speed, numbers, deterministic execution)
-- 7/7: The Call to Action (Link, demo, invitation to test)
+- 7/7: The Call to Action / Battle Cry (Link, demo, invitation to test)
 
 Format as numbered tweets separated by double newlines (1/7, 2/7, etc.).
 Strictly NO em-dashes (—, –, --). Use commas or periods instead.
@@ -158,10 +158,10 @@ Format:
 # Show HN: [Product Name] - [One-sentence punchy hook without buzzwords]
 
 ### Why I built this
-[The founder origin story, the personal frustration, and why existing tools failed]
+[The founder origin story, the false dogma or cultural enemy that was intolerable, and why existing tools failed]
 
 ### What it actually does
-[Concrete technical explanation of the architecture and superpowers]
+[Concrete technical explanation of the architecture, weaponized mechanisms, and superpowers]
 
 ### What surprised us
 [Unexpected lessons or edge cases learned while dogfooding this internally]
@@ -196,22 +196,22 @@ PITCH_DECK_PROMPT = """\
 Write a 10-slide high-stakes pitch deck narrative in Markdown.
 
 Format:
-# Slide 1: The Category Shift
-[The macroeconomic or technological shift that makes legacy tools obsolete]
+# Slide 1: The Category Shift & The Cultural Enemy
+[The false dogma in the market and why legacy tools are obsolete]
 
 # Slide 2: The Bleeding Wound
 [Quantified pain, burnout, lost hours, and runaway costs]
 
-# Slide 3: The Broken Alternatives
+# Slide 3: The Broken Alternatives & The False Dogma
 [Why incumbent vendors and band-aids cannot solve this fundamental flaw]
 
-# Slide 4: The Breakthrough
-[The core invention that changes the equation]
+# Slide 4: The Breakthrough & Rebellion Belief
+[The core invention that inverts the belief and returns power to the user]
 
 # Slide 5: The Superpowers
 [The 3 unfair capabilities granted to users]
 
-# Slide 6: The Secret Weapon
+# Slide 6: The Secret Weapon & Weaponized Mechanisms
 [The defensible technical moat and architectural isolation]
 
 # Slide 7: Unfair Economics

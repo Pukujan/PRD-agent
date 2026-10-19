@@ -7,22 +7,33 @@ isolation. The mode difference is a single boolean; see spec section 4.
 from __future__ import annotations
 
 import json
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable
 
 from prd_agent import (
     evals as evals_stage,
-    flags,
+)
+from prd_agent import (
     flags as flags_module,
+)
+from prd_agent import (
     intake,
+)
+from prd_agent import (
     pack as pack_stage,
+)
+from prd_agent import (
     positioning as positioning_stage,
+)
+from prd_agent import (
     story as story_stage,
+)
+from prd_agent import (
     trends as trends_stage,
 )
 from prd_agent.artifact import Artifact, collect_artifact
-from prd_agent.checks import CheckReport, check_story
+from prd_agent.checks import CheckReport
 from prd_agent.errors import StageError
 from prd_agent.llm import LLM
 from prd_agent.pack import PackResult
@@ -146,7 +157,12 @@ def run(
         return result
 
     if not autonomous:
-        supplied = answers if answers is not None else ask(list(positioned.get("flags", [])))
+        if answers is not None:
+            supplied = answers
+        else:
+            assert ask is not None
+            supplied = ask(list(positioned.get("flags", [])))
+
         if supplied or ask is not None:
             positioned = positioning_stage.positioning(
                 claims,
