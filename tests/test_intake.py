@@ -68,3 +68,11 @@ def test_intake_uses_the_supplied_artifact_without_re_reading(tmp_path: Path, pc
     artifact = intake.collect_artifact(make_repo(tmp_path))
     doc = intake.intake(tmp_path / "nowhere", FakeLLM(reference_claims(pcm_run)), artifact=artifact)
     assert doc["artifact"]["name"] == "mini"
+
+
+def test_the_prompt_carries_claim_ceiling_and_brevity_guidelines(tmp_path: Path) -> None:
+    artifact = intake.collect_artifact(make_repo(tmp_path))
+    prompt = intake.build_intake_prompt(artifact)
+    assert "between 12 and 18 of the most distinctive" in prompt
+    assert "concise (1-2 sentences each)" in prompt
+
