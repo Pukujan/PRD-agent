@@ -141,4 +141,41 @@ def test_interactive_prompts_for_persona(monkeypatch) -> None:
     assert called_persona == [True]
 
 
+def test_readme_flag_parses() -> None:
+    args = cli.build_parser().parse_args(["repo", "--readme"])
+    assert args.readme is True
+
+
+
+def test_main_with_readme_flag_writes_to_artifact_readme(tmp_path: Path, repo_root: Path, pcm_run: Path, monkeypatch) -> None:
+    artifact = tmp_path / "mini"
+    artifact.mkdir()
+    (artifact / "README.md").write_text("# old readme\n", encoding="utf-8")
+    canned = tmp_path / "canned"
+    canned.mkdir()
+    for index, source in enumerate(
+        [pcm_run / "claims.json", pcm_run / "positioning.json"],
+        start=1,
+    ):
+        (canned / f"{index:02d}.txt").write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+    (canned / "03.txt").write_text(
+        (Path(__file__).parent / "test_story.py").read_text(encoding="utf-8").split('GOOD_BODY = """\\\n')[1].split('"""')[0],
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("PRD_AGENT_LLM", "fake")
+    monkeypatch.setenv("PRD_AGENT_CANNED_DIR", str(canned))
+    monkeypatch.chdir(tmp_path)
+    code = cli.main([
+        str(artifact),
+        "--autonomous",
+        "--readme",
+        "--trends-file", str(repo_root / "tests" / "fixtures" / "trends_pcm.json"),
+    ])
+    assert code == 0
+    readme_path = artifact / "README.md"
+    assert readme_path.is_file()
+    assert "# Your project's memory is your Git repository" in readme_path.read_text(encoding="utf-8")
+
+
+
 

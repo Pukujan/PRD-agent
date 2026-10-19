@@ -90,9 +90,50 @@ def test_complete_does_not_retry_a_client_error(monkeypatch) -> None:
 
 def test_default_llm_requires_a_key(monkeypatch) -> None:
     monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("HADES_LITELLM_API_KEY", raising=False)
+    monkeypatch.delenv("OPENCODE_LITELLM_MASTER_KEY", raising=False)
     monkeypatch.delenv("PRD_AGENT_LLM", raising=False)
     with pytest.raises(llm.LLMUnavailable):
         llm.default_llm()
+
+
+def test_normalize_anthropic_url() -> None:
+    assert llm.normalize_anthropic_url("http://127.0.0.1:4000") == "http://127.0.0.1:4000/v1/messages"
+    assert llm.normalize_anthropic_url("http://127.0.0.1:4000/") == "http://127.0.0.1:4000/v1/messages"
+    assert llm.normalize_anthropic_url("http://127.0.0.1:4000/v1") == "http://127.0.0.1:4000/v1/messages"
+    assert llm.normalize_anthropic_url("http://127.0.0.1:4000/v1/") == "http://127.0.0.1:4000/v1/messages"
+    assert llm.normalize_anthropic_url("https://api.anthropic.com/v1/messages") == "https://api.anthropic.com/v1/messages"
+    assert llm.normalize_anthropic_url("") == llm.ANTHROPIC_URL
+
+
+def test_default_llm_falls_back_to_proxy_keys(monkeypatch) -> None:
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+    monkeypatch.delenv("PRD_AGENT_LLM", raising=False)
+    monkeypatch.setenv("HADES_LITELLM_API_KEY", "hades-key")
+    client = llm.default_llm()
+    assert isinstance(client, llm.AnthropicHTTPLLM)
+    assert client.api_key == "hades-key"
+
+    monkeypatch.delenv("HADES_LITELLM_API_KEY", raising=False)
+    monkeypatch.setenv("OPENCODE_LITELLM_MASTER_KEY", "master-key")
+    client2 = llm.default_llm()
+    assert client2.api_key == "master-key"
+
+
+def test_default_llm_normalizes_base_url_from_env(monkeypatch) -> None:
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "k")
+    monkeypatch.setenv("ANTHROPIC_BASE_URL", "http://127.0.0.1:4000")
+    client = llm.default_llm()
+    assert client.base_url == "http://127.0.0.1:4000/v1/messages"
+
+
+def test_default_llm_falls_back_to_anthropic_model_env(monkeypatch) -> None:
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "k")
+    monkeypatch.delenv("PRD_AGENT_MODEL", raising=False)
+    monkeypatch.setenv("ANTHROPIC_MODEL", "claude-sonnet-5")
+    client = llm.default_llm()
+    assert client.model == "claude-sonnet-5"
+
 
 
 def test_default_llm_returns_the_http_client_with_the_env_model(monkeypatch) -> None:
@@ -108,9 +149,11 @@ def test_default_llm_treats_a_blank_model_override_as_unset(monkeypatch) -> None
     # override must fall back to the built-in id rather than being sent.
     monkeypatch.setenv("ANTHROPIC_API_KEY", "k")
     monkeypatch.setenv("PRD_AGENT_MODEL", "   ")
+    monkeypatch.delenv("ANTHROPIC_MODEL", raising=False)
     client = llm.default_llm()
     assert client.model == llm.DEFAULT_MODEL
     assert llm.DEFAULT_MODEL.strip()
+
 
 
 def test_default_llm_can_be_switched_to_canned_responses(tmp_path: Path, monkeypatch) -> None:

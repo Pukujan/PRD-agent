@@ -153,17 +153,50 @@ def build_rewrite_prompt(
         f"{body}\n"
     )
 
+def sanitize_em_dashes(text: str) -> str:
+    """Purge em-dashes, en-dashes, and ASCII em-dashes from prose without corrupting dividers or CLI flags."""
+    lines = text.split("\n")
+    cleaned_lines = []
+    in_fence = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("```") or stripped.startswith("~~~"):
+            in_fence = not in_fence
+            cleaned_lines.append(line)
+            continue
+        if in_fence or re.match(r"^[-*_]{3,}$", stripped):
+            cleaned_lines.append(line)
+            continue
+        # Unicode em-dash and en-dash -> comma space
+        cur = re.sub(r"\s*[\u2014\u2013]\s*", ", ", line)
+        # ASCII em dash with spaces: " -- " -> ", "
+        cur = re.sub(r"\s+--\s+", ", ", cur)
+        # Word--word without spaces -> "word, word"
+        cur = re.sub(r"(?<=[a-zA-Z0-9])--(?!-)(?=[a-zA-Z0-9])", ", ", cur)
+        # Remaining double dashes not part of flags or dividers
+        cur = re.sub(r"(?<=\S)\s*--(?!-)(?![a-zA-Z0-9_\-])", ", ", cur)
+        cur = re.sub(r"(?<![a-zA-Z0-9_\-])--(?!-)\s*(?=\S)", ", ", cur)
+        # Clean up double punctuation
+        cur = re.sub(r",\s*,+", ", ", cur)
+        cur = re.sub(r",\s*\.", ".", cur)
+        cur = re.sub(r"\s+,", ",", cur)
+        cleaned_lines.append(cur)
+    return "\n".join(cleaned_lines)
+
+
 def clean_body(raw: str) -> tuple[str, list[dict]]:
-    """Strip a fence wrapper and harvest any flag the model raised.
+    """Strip a fence wrapper, purge forbidden em-dashes, and harvest any flag the model raised.
 
     The pitch body must not carry `[NEED: ...]` markers, because the footer is code-built. A
     model that raises one anyway is not punished: the marker is removed from the pitch and the
-    flag joins the footer.
+    flag joins the footer. Em-dashes and double-hyphens are sanitized so drafts do not fail
+    gating for punctuation alone.
     """
     text = raw.strip()
     wrapped = _FENCE_WRAPPER.match(text)
     if wrapped:
         text = wrapped.group(1).strip()
+    text = sanitize_em_dashes(text)
     harvested: list[dict] = []
 
     def _harvest(match: re.Match[str]) -> str:
@@ -178,6 +211,7 @@ def clean_body(raw: str) -> tuple[str, list[dict]]:
     text = re.sub(r"[ \t]+\n", "\n", text)
     text = re.sub(r"\n{3,}", "\n\n", text).strip()
     return text, harvested
+
 
 def build_proof_table(claims: dict) -> str:
     rows = ["| Claim on this page | Source | Status |", "|---|---|---|"]

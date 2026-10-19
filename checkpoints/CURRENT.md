@@ -1,6 +1,6 @@
 # Current Repository Checkpoint
 
-<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":"PRA-0009","active_task_file":"tasks/TASK-PRA-0009-automated-runner.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 This is an as-of projection; live GitHub issues own progression. Link the owning leaf, parent ancestry and dependencies for active work.
 
@@ -23,7 +23,7 @@ Phase: bootstrap.
 
 ## Active
 
-None.
+- Task `PRA-0009`: Automate runner discovery, em-dash sanitization, and direct readme output. Lineage: leaf https://github.com/Pukujan/PRD-agent/issues/22, parent: none. Branch: `task/PRA-0009-automated-runner`.
 
 ## Queued
 
@@ -35,4 +35,5 @@ None known.
 
 ## Next atomic action
 
-Await user direction or new feature milestones.
+Commit product and docs, run continuity checkpoint, push branch, open PR, verify gates, merge, and post issue receipt to #22.
+

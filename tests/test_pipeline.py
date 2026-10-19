@@ -304,5 +304,22 @@ def test_pipeline_run_passes_persona_and_pack(tmp_path: Path, pcm_run: Path) -> 
     assert result.pack.pitch_deck_path.is_file()
 
 
+def test_pipeline_run_with_readme_target(tmp_path: Path, pcm_run: Path) -> None:
+    artifact = tmp_path / "mini"
+    artifact.mkdir()
+    (artifact / "README.md").write_text("# old readme\n", encoding="utf-8")
+    fake = FakeLLM([
+        (pcm_run / "claims.json").read_text(encoding="utf-8"),
+        (pcm_run / "trends.json").read_text(encoding="utf-8"),
+        (pcm_run / "positioning.json").read_text(encoding="utf-8"),
+        GOOD_BODY,
+    ])
+    result = pipeline.run(artifact, llm=fake, autonomous=True, readme=True)
+    assert result.story_path == artifact / "README.md"
+    assert result.story_path.is_file()
+    assert "# Your project's memory is your Git repository" in result.story_path.read_text(encoding="utf-8")
+
+
+
 
 

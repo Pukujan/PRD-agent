@@ -247,6 +247,18 @@ def extract_json(text: str) -> dict:
     raise ModelOutputError("no JSON object could be parsed from the model response")
 
 
+def normalize_anthropic_url(url: str) -> str:
+    """Normalize custom Anthropic base URLs (e.g. LiteLLM proxies) to the /v1/messages endpoint."""
+    cleaned = url.strip().rstrip("/")
+    if not cleaned:
+        return ANTHROPIC_URL
+    if cleaned.endswith("/messages"):
+        return cleaned
+    if cleaned.endswith("/v1"):
+        return f"{cleaned}/messages"
+    return f"{cleaned}/v1/messages"
+
+
 def default_llm() -> LLM:
     """The provider a real run uses: canned replay when asked, else the API."""
     if os.environ.get("PRD_AGENT_LLM", "").strip().lower() == "fake":
@@ -254,16 +266,28 @@ def default_llm() -> LLM:
         if not directory:
             raise LLMUnavailable("PRD_AGENT_LLM=fake needs PRD_AGENT_CANNED_DIR set to a directory of .txt files")
         return CannedLLM(Path(directory))
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "").strip()
+    api_key = (
+        os.environ.get("ANTHROPIC_API_KEY", "").strip()
+        or os.environ.get("HADES_LITELLM_API_KEY", "").strip()
+        or os.environ.get("OPENCODE_LITELLM_MASTER_KEY", "").strip()
+    )
     if not api_key:
         raise LLMUnavailable(
             "ANTHROPIC_API_KEY is not set, so no model call can be made. Export it, set "
             "PRD_AGENT_LLM=fake with PRD_AGENT_CANNED_DIR for an offline run, or inject an LLM."
         )
     max_tokens = int(os.environ.get("PRD_AGENT_MAX_TOKENS", str(DEFAULT_MAX_TOKENS)))
+    model = (
+        os.environ.get("PRD_AGENT_MODEL", "").strip()
+        or os.environ.get("ANTHROPIC_MODEL", "").strip()
+        or DEFAULT_MODEL
+    )
+    raw_base_url = os.environ.get("ANTHROPIC_BASE_URL", "").strip()
+    base_url = normalize_anthropic_url(raw_base_url) if raw_base_url else ANTHROPIC_URL
     return AnthropicHTTPLLM(
-        model=os.environ.get("PRD_AGENT_MODEL", "").strip() or DEFAULT_MODEL,
+        model=model,
         api_key=api_key,
         max_tokens=max_tokens,
-        base_url=os.environ.get("ANTHROPIC_BASE_URL", ANTHROPIC_URL),
+        base_url=base_url,
     )
+

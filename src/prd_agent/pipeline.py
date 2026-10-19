@@ -79,6 +79,7 @@ def run(
     trends: dict | None = None,
     trends_file: Path | None = None,
     out: Path | None = None,
+    readme: bool = False,
     autonomous: bool = True,
     ask: Callable[[list[dict]], dict[str, str]] | None = None,
     answers: dict[str, str] | None = None,
@@ -119,10 +120,16 @@ def run(
     positioned = positioning_stage.positioning(claims, trends_doc, llm, hype=hype, persona=persona)
 
     target_run_dir = run_dir(root, name)
-    target_story = Path(out) if out is not None else default_out(root, name)
+    if out is not None:
+        target_story = Path(out)
+    elif readme:
+        target_story = artifact_path / "README.md"
+    else:
+        target_story = default_out(root, name)
     _write_json(target_run_dir / "claims.json", claims)
     _write_json(target_run_dir / "trends.json", trends_doc)
     _write_json(target_run_dir / "positioning.json", positioned)
+
 
     result = RunResult(
         task_name=name,

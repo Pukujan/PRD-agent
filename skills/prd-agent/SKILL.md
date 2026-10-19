@@ -31,6 +31,7 @@ python -m prd_agent <path-to-target-repo>
 | Flag | Default | Description |
 | :--- | :--- | :--- |
 | `artifact_path` | *(required)* | Path to the target repository or artifact directory |
+| `--readme` | `False` | Write the generated marketing story directly to `<artifact_path>/README.md` |
 | `--out PATH` | `stories/<name>.md` | Custom output path for the story markdown |
 | `--interactive` | `False` | Stop and prompt the human interactively on open flags |
 | `--trends-file PATH` | `None` | Use a local JSON file for trends instead of running a live web search |
@@ -39,6 +40,15 @@ python -m prd_agent <path-to-target-repo>
 | `--hype LEVEL` | `1000` | Narrative calibration dial: 1000 (electric), 750 (venture), 500 (balanced), 250 (truth) |
 | `--persona PERSONA` | `solopreneur` | Audience persona: solopreneur (unicorn), enterprise (cto/vp), normie (consumer/magic) |
 | `--pack` | `False` | Generate the full multi-asset launch pack under runs/<name>/pack/ |
+
+## Turnkey Runner & Proxy Auto-Discovery
+
+PRD-agent is built for autonomous execution across developer and agent workflows:
+- **Proxy Auto-Discovery:** If `ANTHROPIC_BASE_URL` points to a local proxy (such as LiteLLM at `http://127.0.0.1:4000`), it automatically normalizes the path to `/v1/messages`.
+- **Key Fallback:** Auto-discovers `HADES_LITELLM_API_KEY` or `OPENCODE_LITELLM_MASTER_KEY` when `ANTHROPIC_API_KEY` is not explicitly set.
+- **Model Fallback:** Honors `ANTHROPIC_MODEL` when `PRD_AGENT_MODEL` is unset.
+- **Em-Dash Auto-Purge:** Automatically sanitizes em-dashes and double-hyphens before gating so model drafts never fail on punctuation alone.
+
 
 ## The Hype-to-Honesty Dial
 
