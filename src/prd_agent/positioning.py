@@ -13,6 +13,7 @@ from dataclasses import dataclass
 
 from prd_agent.errors import ModelOutputError
 from prd_agent.flags import make_flag
+from prd_agent.hype import get_hype_tier
 from prd_agent.llm import LLM, extract_json
 from prd_agent.schemas import POSITIONING_SCHEMA, POSITIONING_SPEC, require_valid
 
@@ -66,6 +67,10 @@ Claims:
 Trends (competitor language, market stage, register):
 
 {trends}
+
+Narrative calibration:
+
+{hype_directive}
 
 {answers}
 """
@@ -123,7 +128,14 @@ def swap_test(
     return SwapResult(True, note, (), max_overlap, closest)
 
 
-def build_positioning_prompt(claims: dict, trends: dict, *, answers: str | None = None) -> str:
+def build_positioning_prompt(
+    claims: dict,
+    trends: dict,
+    *,
+    answers: str | None = None,
+    hype: str | None = None,
+) -> str:
+    tier = get_hype_tier(hype)
     schema = (
         '{"schema": "prd-agent.positioning.v1", '
         '"audience": {"who": "", "situation": "", "trigger": ""}, '
@@ -137,19 +149,29 @@ def build_positioning_prompt(claims: dict, trends: dict, *, answers: str | None 
         claims=json.dumps(claims, indent=2, ensure_ascii=False),
         trends=json.dumps(trends, indent=2, ensure_ascii=False),
         answers=answers or "No owner answers were supplied for this run.",
+        hype_directive=tier.directive,
     )
 
 
-def positioning(claims: dict, trends: dict, llm: LLM, *, answers: str | None = None) -> dict:
+def positioning(
+    claims: dict,
+    trends: dict,
+    llm: LLM,
+    *,
+    answers: str | None = None,
+    hype: str | None = None,
+) -> dict:
+    tier = get_hype_tier(hype)
     raw = llm.complete(
         system=POSITIONING_SYSTEM,
-        prompt=build_positioning_prompt(claims, trends, answers=answers),
+        prompt=build_positioning_prompt(claims, trends, answers=answers, hype=tier.level),
     )
     doc = extract_json(raw)
     if not isinstance(doc, dict):
         raise ModelOutputError("the positioning reply was not a JSON object")
     doc.setdefault("schema", POSITIONING_SCHEMA)
     doc.setdefault("flags", [])
+    doc["hype_level"] = tier.level
     result = swap_test(str(doc.get("differentiator", "")), list(trends.get("category", {}).get("competitors", [])))
     doc["swap_test"] = {"passed": result.passed, "note": result.note}
     if not result.passed:

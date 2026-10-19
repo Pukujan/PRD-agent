@@ -23,8 +23,20 @@ PRD-agent runs **autonomously by default**: it reads the artifact, searches the 
 | `--no-web` | Never run the live web pass. Requires `--trends-file` |
 | `--answers-file PATH` | A JSON object of flag id to answer, instead of reading stdin |
 | `--evals PATH` | Where to append the worked example (default: `evals/story_evals.json`) |
+| `--hype LEVEL` | Narrative calibration dial: `1000` (electric), `750` (venture), `500` (balanced), `250` (truth) |
 
 The output in `stories/<artifact-name>.md` is pure pitch: zero audit tables, zero internal code paths, zero em dashes. Every run writes truth telemetry to `runs/<artifact-name>/claims.json`, `trends.json` and `positioning.json`, keeping verification segregated from marketing copy.
+
+## The Hype-to-Honesty Dial
+
+Calibrate how loud the story goes depending on your target audience:
+
+- **Level 1000: Electric God-Mode (default)**: Maximum kinetic energy, loud optimism, One-Person Unicorn, 100x leverage, and supersonic momentum.
+- **Level 750: High-Converting Venture Hype**: Sharp 2:00 AM founder nightmare, unlocked dream, and punchy competitive contrast.
+- **Level 500: Balanced Authority**: Confident, dignified engineering reality. Direct problem and solution with zero fluff.
+- **Level 250: Pure Technical Truth**: Clinical, understated, empirical rigor. Code, benchmarks, and data speak for themselves.
+
+In `--interactive` mode without `--hype`, `prd-agent` interactively prompts you to choose the dial before generation.
 
 ## The four stages
 

@@ -206,3 +206,32 @@ def test_the_rewrite_prompt_repeats_the_facts_not_just_the_findings(pcm_run: Pat
     assert "It's not a tool" in prompt
     assert "Rewrite from the facts" in prompt
     assert "a validator checks it" in prompt  # the differentiator, restated for the rewrite
+
+
+def test_story_prompt_carries_hype_directive(pcm_run: Path) -> None:
+    prompt_1000 = story.build_story_prompt(
+        positioning=load(pcm_run / "positioning.json"),
+        claims=load(pcm_run / "claims.json"),
+        trends=load(pcm_run / "trends.json"),
+        hype="1000",
+    )
+    assert "ELECTRIC GOD-MODE" in prompt_1000
+    assert "One-Person Unicorn" in prompt_1000
+
+    prompt_250 = story.build_story_prompt(
+        positioning=load(pcm_run / "positioning.json"),
+        claims=load(pcm_run / "claims.json"),
+        trends=load(pcm_run / "trends.json"),
+        hype="250",
+    )
+    assert "PURE TECHNICAL TRUTH" in prompt_250
+
+    rewrite_prompt = story.build_rewrite_prompt(
+        body=BAD_BODY,
+        report=check_story(BAD_BODY),
+        positioning=load(pcm_run / "positioning.json"),
+        claims=load(pcm_run / "claims.json"),
+        hype="1000",
+    )
+    assert "ELECTRIC GOD-MODE" in rewrite_prompt
+

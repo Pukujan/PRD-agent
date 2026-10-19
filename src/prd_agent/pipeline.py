@@ -81,6 +81,7 @@ def run(
     answers: dict[str, str] | None = None,
     live: bool = True,
     evals_path: Path | None = None,
+    hype: str | None = None,
 ) -> RunResult:
     """Run intake, trends, positioning and story. Human mode stops at the flag loop."""
     artifact_path = Path(artifact_path)
@@ -110,7 +111,7 @@ def run(
     else:
         trends_doc = trends_stage.analyze(claims, llm)
 
-    positioned = positioning_stage.positioning(claims, trends_doc, llm)
+    positioned = positioning_stage.positioning(claims, trends_doc, llm, hype=hype)
 
     target_run_dir = run_dir(root, name)
     target_story = Path(out) if out is not None else default_out(root, name)
@@ -140,6 +141,7 @@ def run(
                 trends_doc,
                 llm,
                 answers=flags_module.answers_as_prompt(list(positioned.get("flags", [])), supplied),
+                hype=hype,
             )
             _write_json(target_run_dir / "positioning.json", positioned)
             result.flags = list(positioned.get("flags", []))
@@ -152,6 +154,7 @@ def run(
         trends=trends_doc,
         llm=llm,
         exemplars=exemplars,
+        hype=hype,
     )
     target_story.parent.mkdir(parents=True, exist_ok=True)
     target_story.write_text(page, encoding="utf-8")
@@ -167,7 +170,13 @@ def run(
     result.awaiting_answers = False
     return result
 
-def close_flag_loop(result: RunResult, *, llm: LLM, answers: dict[str, str]) -> RunResult:
+def close_flag_loop(
+    result: RunResult,
+    *,
+    llm: LLM,
+    answers: dict[str, str],
+    hype: str | None = None,
+) -> RunResult:
     """Resume a stopped human-mode run with the owner's answers.
 
     Reads the documents already on disk, folds the answers back into positioning, regenerates
@@ -176,15 +185,17 @@ def close_flag_loop(result: RunResult, *, llm: LLM, answers: dict[str, str]) -> 
     claims = json.loads(result.claims_path.read_text(encoding="utf-8"))
     trends_doc = json.loads(result.trends_path.read_text(encoding="utf-8"))
     positioned = json.loads(result.positioning_path.read_text(encoding="utf-8"))
+    hype_choice = hype or positioned.get("hype_level")
     revised = positioning_stage.positioning(
         claims,
         trends_doc,
         llm,
         answers=flags_module.answers_as_prompt(list(positioned.get("flags", [])), answers),
+        hype=hype_choice,
     )
     _write_json(result.positioning_path, revised)
     page, report = story_stage.story(
-        claims=claims, positioning=revised, trends=trends_doc, llm=llm
+        claims=claims, positioning=revised, trends=trends_doc, llm=llm, hype=hype_choice
     )
     result.story_path.parent.mkdir(parents=True, exist_ok=True)
     result.story_path.write_text(page, encoding="utf-8")

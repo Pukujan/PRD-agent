@@ -1,6 +1,6 @@
 # Current Repository Checkpoint
 
-<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":"PRA-0007","active_task_file":"tasks/TASK-PRA-0007-hype-dial.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 This is an as-of projection; live GitHub issues own progression. Link the owning leaf, parent ancestry and dependencies for active work.
 
@@ -21,7 +21,7 @@ Phase: bootstrap.
 
 ## Active
 
-- None (all current tasks and queued issues complete). Most recent task: PRA-0006 (completed).
+- `PRA-0007`: Add the 4-tier Hype-to-Honesty Dial with interactive pre-generation calibration (leaf issue https://github.com/Pukujan/PRD-agent/issues/18).
 
 ## Queued
 
@@ -33,4 +33,4 @@ None known.
 
 ## Next atomic action
 
-Await user direction or new feature milestones.
+Commit product code and documentation, run continuity checkpoint, push branch, and open PR.

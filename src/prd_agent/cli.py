@@ -57,6 +57,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="where to append the worked example; default evals/story_evals.json",
     )
+    parser.add_argument(
+        "--hype",
+        default=None,
+        help="Hype-to-Honesty Dial level: 1000 (electric), 750 (venture), 500 (balanced), 250 (truth)",
+    )
     return parser
 
 def main(argv: list[str] | None = None) -> int:
@@ -64,6 +69,13 @@ def main(argv: list[str] | None = None) -> int:
     try:
         llm = default_llm()
         is_autonomous = not args.interactive if args.interactive else args.autonomous
+        hype_level = args.hype
+        if not is_autonomous and hype_level is None:
+            from prd_agent.hype import ask_hype_level
+            hype_level = ask_hype_level()
+        elif hype_level is None:
+            hype_level = "1000"
+
         result = run(
             Path(args.artifact_path),
             llm=llm,
@@ -73,13 +85,14 @@ def main(argv: list[str] | None = None) -> int:
             answers=answers_from_file(Path(args.answers_file)) if args.answers_file else None,
             live=not args.no_web,
             evals_path=Path(args.evals) if args.evals else None,
+            hype=hype_level,
         )
     except StageError as error:
         print(f"prd-agent: {error}", file=sys.stderr)
         return 2
     if result.awaiting_answers:
         answers = flags_module.ask_questions(result.flags)
-        result = close_flag_loop(result, llm=llm, answers=answers)
+        result = close_flag_loop(result, llm=llm, answers=answers, hype=hype_level)
         if result.story_path.is_file():
             print(f"prd-agent: wrote {result.story_path}")
             return 0
