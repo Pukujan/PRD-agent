@@ -79,3 +79,44 @@ def test_the_fixture_and_the_live_path_produce_the_same_shape(pcm_run: Path) -> 
     assert [item.keys() for item in live["category"]["competitors"]] == [
         item.keys() for item in fixture["category"]["competitors"]
     ]
+
+
+def test_search_tools_can_be_disabled_via_env_var(monkeypatch) -> None:
+    monkeypatch.setenv("PRD_AGENT_NO_SEARCH_TOOL", "1")
+    assert trends.search_tools() == []
+    monkeypatch.setenv("PRD_AGENT_NO_SEARCH_TOOL", "0")
+    assert trends.search_tools() == [trends.llm.WEB_SEARCH_TOOL]
+
+
+def test_is_search_context_detects_raw_snippets() -> None:
+    assert not trends.is_search_context("Short error message")
+    assert not trends.is_search_context("I searched the web for you and found nothing.")
+    snippet_text = (
+        "Search Results for prompt engineering tools:\n"
+        "1. Title: Tool Alpha\n"
+        "   URL: https://example.com/alpha\n"
+        "   Snippet: The best prompt tool.\n"
+        "2. Title: Tool Beta\n"
+        "   URL: https://example.com/beta\n"
+        "   Snippet: Automate your prompts."
+    )
+    assert trends.is_search_context(snippet_text)
+
+
+def test_analyze_performs_secondary_synthesis_when_search_snippets_returned(pcm_run: Path) -> None:
+    fixture = load(pcm_run / "trends.json")
+    raw_snippets = (
+        "DuckDuckGo search results for software continuity git tools:\n"
+        "[1] URL: https://example.com/cm-tool Title: Continuous Memory Tools\n"
+        "    Snippet: Git-based memory tools for multi-agent workflows.\n"
+        "[2] URL: https://example.com/git-assist Title: Git Assistant\n"
+        "    Snippet: Never lose context across agents."
+    )
+    fake = FakeLLM([raw_snippets, json.dumps(fixture)])
+    doc = trends.analyze(load(pcm_run / "claims.json"), fake, searched_at="2026-10-13")
+    assert len(fake.calls) == 2
+    assert fake.calls[0]["tools"] == [trends.llm.WEB_SEARCH_TOOL]
+    assert fake.calls[1]["tools"] is None
+    assert "raw search results and market snippets" in str(fake.calls[1]["prompt"])
+    assert doc["category"]["competitors"] == fixture["category"]["competitors"]
+    assert validate_trends(doc) == []
