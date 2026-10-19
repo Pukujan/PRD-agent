@@ -121,3 +121,43 @@ def test_default_llm_can_be_switched_to_canned_responses(tmp_path: Path, monkeyp
     client = llm.default_llm()
     assert client.complete(system="s", prompt="p") == "first"
     assert client.complete(system="s", prompt="p") == "second"
+
+
+def test_default_llm_respects_max_tokens_env_var(monkeypatch) -> None:
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "test-key")
+    monkeypatch.setenv("PRD_AGENT_MAX_TOKENS", "4096")
+    client = llm.default_llm()
+    assert isinstance(client, llm.AnthropicHTTPLLM)
+    assert client.max_tokens == 4096
+
+
+def test_extract_json_salvages_truncated_stream() -> None:
+    truncated = """```json
+{
+  "schema": "prd-agent.claims.v1",
+  "artifact": {"name": "repo", "path": "/test", "commit": "abc", "read_at": "2026-10-18"},
+  "claims": [
+    {"id": "C-001", "text": "Claim 1", "status": "verified", "evidence": "f.py:1", "note": "ok"},
+    {"id": "C-002", "text": "Claim 2", "status": "claimed", "evidence": "", "note": ""},
+    {"id": "C-003", "text": "Claim 3 truncated mid-stream", "status": "ver
+"""
+    result = llm.extract_json(truncated)
+    assert result["schema"] == "prd-agent.claims.v1"
+    assert len(result["claims"]) == 2
+    assert [c["id"] for c in result["claims"]] == ["C-001", "C-002"]
+
+
+def test_extract_json_salvages_truncated_array_of_strings() -> None:
+    truncated = """
+{
+  "schema": "prd-agent.trends.v1",
+  "queries": ["query one", "query two", "query three trunca
+"""
+    result = llm.extract_json(truncated)
+    assert result["schema"] == "prd-agent.trends.v1"
+    assert result["queries"] == ["query one", "query two"]
+
+
+def test_salvage_json_returns_none_when_no_json_present() -> None:
+    assert llm.salvage_json("There is no json in this text.") is None
+

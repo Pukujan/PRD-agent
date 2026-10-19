@@ -21,7 +21,7 @@ from prd_agent.errors import LLMUnavailable, ModelOutputError, StageError
 ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_VERSION = "2023-06-01"
 DEFAULT_MODEL = "claude-sonnet-4-5-20250929"
-DEFAULT_MAX_TOKENS = 8000
+DEFAULT_MAX_TOKENS = int(os.environ.get("PRD_AGENT_MAX_TOKENS", "8000"))
 RETRY_DELAY_SECONDS = 2.0
 RETRYABLE_STATUS = frozenset({429, 500, 502, 503, 504, 529})
 WEB_SEARCH_TOOL: dict[str, object] = {"type": "web_search_20250305", "name": "web_search", "max_uses": 8}
@@ -172,6 +172,61 @@ def extract_text(payload: dict) -> str:
     return text
 
 
+def salvage_json(text: str) -> dict | None:
+    """Salvage completed objects from a truncated JSON stream.
+
+    Walks forward scanning structural delimiters outside string literals,
+    then evaluates candidate closing prefixes from latest to earliest.
+    """
+    start = text.find("{")
+    if start == -1:
+        return None
+    raw = text[start:]
+
+    stack: list[str] = []
+    in_string = False
+    escape = False
+    candidates: list[tuple[int, str]] = []
+
+    for i, char in enumerate(raw):
+        if in_string:
+            if escape:
+                escape = False
+            elif char == "\\":
+                escape = True
+            elif char == '"':
+                in_string = False
+                if stack and stack[-1] == "]":
+                    candidates.append((i + 1, "".join(reversed(stack))))
+            continue
+
+        if char == '"':
+            in_string = True
+        elif char == "{":
+            stack.append("}")
+        elif char == "[":
+            stack.append("]")
+        elif char == "}":
+            if stack and stack[-1] == "}":
+                stack.pop()
+                candidates.append((i + 1, "".join(reversed(stack))))
+        elif char == "]":
+            if stack and stack[-1] == "]":
+                stack.pop()
+                candidates.append((i + 1, "".join(reversed(stack))))
+
+    for end_pos, closing in reversed(candidates):
+        prefix = raw[:end_pos].rstrip().rstrip(",")
+        attempt = prefix + closing
+        try:
+            parsed = json.loads(attempt)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(parsed, dict) and parsed:
+            return parsed
+    return None
+
+
 def extract_json(text: str) -> dict:
     """Pull one JSON object out of a model reply, fenced or wrapped in prose."""
     candidates: list[str] = [block.strip() for block in re.findall(r"```(?:json)?\s*(.*?)```", text, re.DOTALL)]
@@ -186,6 +241,9 @@ def extract_json(text: str) -> dict:
             continue
         if isinstance(parsed, dict):
             return parsed
+    salvaged = salvage_json(text)
+    if salvaged is not None:
+        return salvaged
     raise ModelOutputError("no JSON object could be parsed from the model response")
 
 
@@ -202,8 +260,10 @@ def default_llm() -> LLM:
             "ANTHROPIC_API_KEY is not set, so no model call can be made. Export it, set "
             "PRD_AGENT_LLM=fake with PRD_AGENT_CANNED_DIR for an offline run, or inject an LLM."
         )
+    max_tokens = int(os.environ.get("PRD_AGENT_MAX_TOKENS", str(DEFAULT_MAX_TOKENS)))
     return AnthropicHTTPLLM(
         model=os.environ.get("PRD_AGENT_MODEL", "").strip() or DEFAULT_MODEL,
         api_key=api_key,
+        max_tokens=max_tokens,
         base_url=os.environ.get("ANTHROPIC_BASE_URL", ANTHROPIC_URL),
     )

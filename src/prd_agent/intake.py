@@ -35,6 +35,9 @@ Rules, in order of importance:
    written, and say in the note where it diverges.
 5. List every fact a reader of a marketing page would want and the artifact does not settle,
    in `unknowns`.
+6. Extract between 12 and 18 of the most distinctive architectural, protocol, and interface claims.
+   Do not exhaustively enumerate repetitive or minor implementation details.
+7. Keep claim text and notes concise (1-2 sentences each) to remain within token limits.
 
 Answer with exactly this JSON object and no prose around it:
 
