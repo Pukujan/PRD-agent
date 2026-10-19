@@ -23,7 +23,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--autonomous",
         action="store_true",
-        help="complete the run and ship the flag footer instead of stopping to ask",
+        default=True,
+        help="complete the run without stopping to ask (default: True)",
+    )
+    parser.add_argument(
+        "--interactive",
+        action="store_true",
+        default=False,
+        help="stop at open flags and prompt on stdin instead of running autonomously",
     )
     parser.add_argument(
         "--out",
@@ -56,12 +63,13 @@ def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
         llm = default_llm()
+        is_autonomous = not args.interactive if args.interactive else args.autonomous
         result = run(
             Path(args.artifact_path),
             llm=llm,
             trends_file=Path(args.trends_file) if args.trends_file else None,
             out=Path(args.out) if args.out else None,
-            autonomous=args.autonomous,
+            autonomous=is_autonomous,
             answers=answers_from_file(Path(args.answers_file)) if args.answers_file else None,
             live=not args.no_web,
             evals_path=Path(args.evals) if args.evals else None,

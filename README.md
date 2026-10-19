@@ -10,41 +10,32 @@ the page a stranger would read to the end.
 
 ```bash
 python -m pip install -e ".[dev]"
-python -m prd_agent ../your-repo --autonomous
+python -m prd_agent ../your-repo
 ```
 
-Without `--autonomous` the run stops at the open flags and asks. With it, the run completes and
-ships the flags as a footer on the page.
+PRD-agent runs **autonomously by default**: it reads the artifact, searches the web, derives positioning, and outputs the pure marketing story into `stories/<artifact-name>.md`.
 
 | Flag | What it does |
 |---|---|
-| `--autonomous` | Complete the run and ship the flag footer instead of stopping to ask |
-| `--out PATH` | Where to write the story. Default `stories/<artifact-name>.md` |
+| `--interactive` | Stop at open flags and prompt on stdin instead of running autonomously |
+| `--out PATH` | Where to write the story (default: `stories/<artifact-name>.md`) |
 | `--trends-file PATH` | Read `trends.json` from a file instead of running the live web pass |
 | `--no-web` | Never run the live web pass. Requires `--trends-file` |
 | `--answers-file PATH` | A JSON object of flag id to answer, instead of reading stdin |
-| `--evals PATH` | Where to append the worked example. Default `evals/story_evals.json` |
+| `--evals PATH` | Where to append the worked example (default: `evals/story_evals.json`) |
 
-Every run writes `runs/<artifact-name>/claims.json`, `trends.json` and `positioning.json`, so any
-stage can be inspected or re-run on its own.
+The output in `stories/<artifact-name>.md` is pure pitch: zero audit tables, zero internal code paths, zero em dashes. Every run writes truth telemetry to `runs/<artifact-name>/claims.json`, `trends.json` and `positioning.json`, keeping verification segregated from marketing copy.
 
 ## The four stages
 
 ```
 artifact repo -> claims.json -> trends.json -> positioning.json -> story.md
-                     ^______________ [NEED:] ______________|
 ```
 
-1. **Intake** reads README, entry points, tests, commit subjects and docs. An unread fact becomes
-   an `unknown`. The stage never invents a mechanism.
-2. **Trends** runs one live web search for what competitors claim, what register of copy is
-   landing, and which conversation is worth attaching to, then picks the market sophistication
-   stage (Schwartz).
-3. **Positioning** derives the spine (discomfort, vision, path) and the differentiator, and runs
-   the swap test in code. A differentiator that a competitor already covers fails and is flagged.
-4. **Story** drafts the page through the vendored `copywriting` skill, gates it against that
-   skill's own self-check, rewrites a failing draft from the facts, and appends the proof table,
-   the open flags and the self-check paragraph in code.
+1. **Intake** reads README, entry points, tests, commit subjects and docs into concrete claims.
+2. **Trends** runs a live web search for what competitors claim, market sophistication stage (Schwartz), the universal human nightmare, and viral hype words.
+3. **Positioning** derives the spine (discomfort, vision, path), concrete nightmare/dream scenes, and runs the machine swap test against competitors.
+4. **Story** drafts the page through the vendored `copywriting` skill, gates it against the anti-audit self-check in `checks.py`, rewrites any draft tripping hard bans, and produces pure pitch copy without audit clutter.
 
 ## The model seam
 
@@ -68,10 +59,11 @@ export PRD_AGENT_CANNED_DIR=/path/to/dir/of/numbered/txt/files
 
 `prd_agent.checks` implements the vendored skill's `references/ai-tells.md`: the hard bans
 (contrast reveals, negation lists, trailing pile-ons, self-answered questions, colon reveals,
-stock phrases, banned vocabulary, hype punctuation, em dashes in short copy), the frequency caps
+stock phrases, banned vocabulary, hype punctuation, em dashes in short copy, double-hyphen pauses,
+audit jargon, code paths in prose, and features before story), the frequency caps
 counted per section, and the three structural beats. It cannot decide whether the story lands,
 whether a sentence that avoids every rule is still empty, or any tell in a shape no rule matches.
-The footer says so on every page, and that judgment stays with the owner.
+That judgment stays with the owner.
 
 ## Licence
 
