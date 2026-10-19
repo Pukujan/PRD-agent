@@ -1,8 +1,8 @@
 # TASK-PRA-0007 — Hype Dial
 
-<!-- continuity:task {"acceptance":["python -m pytest tests/test_hype.py passes all 4 tier calibration tests","python -m pytest passes all 167 unit and integration tests cleanly","--hype CLI parameter parses canonical values and aliases (1000, 750, 500, 250, electric, venture, balanced, truth)","interactive mode prompts operator with 4-tier calibration menu when --hype is omitted","selected hype directive is injected into positioning and story prompts"],"depends_on":[],"goal":"Add the 4-tier Hype-to-Honesty Dial with interactive pre-generation calibration","id":"PRA-0007","issue_url":"https://github.com/Pukujan/PRD-agent/issues/18","next_action":"Commit product code and documentation, run continuity checkpoint, and open pull request","owner":"Pukujan","priority":"P1","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"active","why":"Builders need copy calibrated from Level 1000 electric solo-unicorn hype down to Level 250 pure technical truth"} -->
+<!-- continuity:task {"acceptance":["python -m pytest tests/test_hype.py passes all 4 tier calibration tests","python -m pytest passes all 167 unit and integration tests cleanly","--hype CLI parameter parses canonical values and aliases (1000, 750, 500, 250, electric, venture, balanced, truth)","interactive mode prompts operator with 4-tier calibration menu when --hype is omitted","selected hype directive is injected into positioning and story prompts"],"depends_on":[],"goal":"Add the 4-tier Hype-to-Honesty Dial with interactive pre-generation calibration","id":"PRA-0007","issue_url":"https://github.com/Pukujan/PRD-agent/issues/18","next_action":"None","owner":"Pukujan","priority":"P1","protocol_version":"0.1.0-draft","schema":"project-continuity.task.v1","status":"completed","why":"Builders need copy calibrated from Level 1000 electric solo-unicorn hype down to Level 250 pure technical truth"} -->
 
-- Status: active
+- Status: completed
 - Owner: Pukujan
 - Priority: P1
 - Depends on: none
