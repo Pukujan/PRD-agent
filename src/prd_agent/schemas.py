@@ -45,6 +45,9 @@ TRENDS_SPEC: dict[str, Any] = {
     },
     "style": {"register": "str", "notes": "list[str]"},
     "cultural": ("list", {"moment": "str", "url": "str", "relevance": "str"}),
+    "human_nightmare": "opt:str",
+    "trending_hype_words": "opt:list[str]",
+    "unlocked_dream": "opt:str",
     "searched_at": "str",
 }
 
@@ -56,6 +59,9 @@ POSITIONING_SPEC: dict[str, Any] = {
     "path": "str",
     "alternative": "str",
     "differentiator": "str",
+    "nightmare_scene": "opt:str",
+    "dream_scene": "opt:str",
+    "metaphor": "opt:str",
     "swap_test": {"passed": "bool", "note": "str"},
     "flags": ("list", {"id": "str", "need": "str", "claim": "str", "unlock": "str"}),
 }
@@ -77,10 +83,13 @@ def validate(doc: Any, spec: Any, path: str = "$") -> list[str]:
             return [f"{path}: expected an object, got {type(doc).__name__}"]
         problems = []
         for key, sub_spec in spec.items():
+            is_optional = isinstance(sub_spec, str) and sub_spec.startswith("opt:")
+            actual_spec = sub_spec[4:] if is_optional else sub_spec
             if key not in doc:
-                problems.append(f"{path}.{key}: missing")
+                if not is_optional:
+                    problems.append(f"{path}.{key}: missing")
             else:
-                problems.extend(validate(doc[key], sub_spec, f"{path}.{key}"))
+                problems.extend(validate(doc[key], actual_spec, f"{path}.{key}"))
         for key in doc:
             if key not in spec:
                 problems.append(f"{path}.{key}: unexpected field")

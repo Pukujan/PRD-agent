@@ -44,7 +44,7 @@ def test_main_runs_end_to_end_offline(tmp_path: Path, repo_root: Path, pcm_run: 
     assert code == 0
     written = tmp_path / "stories" / "mini.md"
     assert written.is_file()
-    assert "### Proof and open items" in written.read_text(encoding="utf-8")
+    assert "### Proof and open items" not in written.read_text(encoding="utf-8")
     assert json.loads((tmp_path / "runs" / "mini" / "positioning.json").read_text(encoding="utf-8"))["schema"] == "prd-agent.positioning.v1"
 
 def test_main_reports_a_stage_failure_with_a_nonzero_code(tmp_path: Path, monkeypatch, capsys) -> None:

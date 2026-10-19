@@ -195,3 +195,57 @@ def test_the_limitations_are_honest_about_scope() -> None:
     assert "cannot" in report.limitations()
     assert "shape no rule here matches" in report.limitations()
 
+
+def test_ascii_em_dash_is_a_ban_in_long_copy() -> None:
+    report = checks.check_story("## Body Section\n\nThe failure has a name -- it is context rot.\n")
+    assert "ascii_em_dash" in [f.rule for f in report.bans]
+
+
+def test_ascii_em_dash_in_short_copy_is_a_ban() -> None:
+    report = checks.check_story("# Headline -- Subheading\n\n**A bold pitch.**\n")
+    assert "em_dash_short" in [f.rule for f in report.bans]
+
+
+def test_cli_flags_and_markdown_dividers_are_not_em_dashes() -> None:
+    draft = "## Body Section\n\nRun `init --profile software` or --profile directly.\n\n---\n\nNext line.\n"
+    report = checks.check_story(draft)
+    assert "ascii_em_dash" not in [f.rule for f in report.bans]
+    assert "em_dash_short" not in [f.rule for f in report.bans]
+
+
+def test_audit_jargon_is_a_ban() -> None:
+    assert "audit_jargon" in [f.rule for f in checks.check_story("## Section\n\nHere is the proof table.\n").bans]
+    assert "audit_jargon" in [f.rule for f in checks.check_story("## Section\n\nCheck the audit trail.\n").bans]
+    assert "audit_jargon" in [f.rule for f in checks.check_story("## Section\n\nStatus: verified.\n").bans]
+
+
+def test_code_path_in_prose_is_a_ban() -> None:
+    report = checks.check_story("## Section\n\nLook at `src/prd_agent/checks.py` for implementation.\n")
+    assert "code_path_in_prose" in [f.rule for f in report.bans]
+
+
+def test_feature_before_story_is_a_ban_in_hero_and_discomfort() -> None:
+    report_hero = checks.check_story("# Title\n\n**Key features of this product.**\n")
+    assert "feature_before_story" in [f.rule for f in report_hero.bans]
+    report_discomfort = checks.check_story("# Title\n\n**A hook.**\n\n## The Problem\n\nUnder the hood, we use an AST.\n")
+    assert "feature_before_story" in [f.rule for f in report_discomfort.bans]
+
+
+def test_feature_in_later_sections_is_not_banned_by_feature_before_story() -> None:
+    draft = (
+        "# Title\n\n**A hook.**\n\n## The Problem\n\nYou are tired and overworked.\n\n"
+        "## The Vision\n\nYou sleep while code ships.\n\n## The Architecture\n\nUnder the hood, it runs cleanly.\n"
+    )
+    report = checks.check_story(draft)
+    assert "feature_before_story" not in [f.rule for f in report.bans]
+
+
+def test_the_gold_standard_story_is_clean() -> None:
+    path = Path("stories/acs-hot-loader.md")
+    report = checks.check_story(path.read_text(encoding="utf-8"))
+    assert report.bans == (), [f"{f.rule} at {f.line}: {f.text}" for f in report.bans]
+    assert report.cap_violations() == ()
+    assert report.passed() is True
+
+
+
