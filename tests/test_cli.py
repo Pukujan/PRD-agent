@@ -8,7 +8,8 @@ from prd_agent import cli
 def test_the_documented_invocation_parses() -> None:
     args = cli.build_parser().parse_args(["../some-repo"])
     assert args.artifact_path == "../some-repo"
-    assert args.autonomous is False
+    assert args.autonomous is True
+    assert args.interactive is False
     assert args.out is None
     assert args.trends_file is None
     assert args.answers_file is None
@@ -17,6 +18,10 @@ def test_autonomous_and_out_parse() -> None:
     args = cli.build_parser().parse_args(["repo", "--autonomous", "--out", "stories/x.md"])
     assert args.autonomous is True
     assert args.out == "stories/x.md"
+
+def test_interactive_flag_parses() -> None:
+    args = cli.build_parser().parse_args(["repo", "--interactive"])
+    assert args.interactive is True
 
 def test_main_runs_end_to_end_offline(tmp_path: Path, repo_root: Path, pcm_run: Path, monkeypatch) -> None:
     artifact = tmp_path / "mini"

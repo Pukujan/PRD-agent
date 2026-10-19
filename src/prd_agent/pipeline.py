@@ -76,7 +76,7 @@ def run(
     trends: dict | None = None,
     trends_file: Path | None = None,
     out: Path | None = None,
-    autonomous: bool = False,
+    autonomous: bool = True,
     ask: Callable[[list[dict]], dict[str, str]] | None = None,
     answers: dict[str, str] | None = None,
     live: bool = True,
