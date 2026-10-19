@@ -61,3 +61,18 @@ def test_require_valid_raises_with_a_readable_message(pcm_run: Path) -> None:
         schemas.require_valid(doc, schemas.POSITIONING_SPEC, "positioning.json")
     assert "positioning.json" in str(error.value)
     assert "swap_test.passed" in str(error.value)
+
+
+def test_trends_and_positioning_accept_hype_and_scene_fields(pcm_run: Path) -> None:
+    trends_doc = copy.deepcopy(load(pcm_run / "trends.json"))
+    trends_doc["human_nightmare"] = "babysitting hyperactive toddlers with root access"
+    trends_doc["trending_hype_words"] = ["autonomous studio", "self-healing repo"]
+    trends_doc["unlocked_dream"] = "closing your laptop at 6 PM while features ship"
+    assert schemas.validate_trends(trends_doc) == []
+
+    pos_doc = copy.deepcopy(load(pcm_run / "positioning.json"))
+    pos_doc["nightmare_scene"] = "Waking up at 2 AM to check if an agent leaked API keys"
+    pos_doc["dream_scene"] = "Shipping five major features with zero bugs"
+    pos_doc["metaphor"] = "Hyperactive toddlers with root access"
+    assert schemas.validate_positioning(pos_doc) == []
+

@@ -23,21 +23,28 @@ STAGE_BRIEF = {
 }
 
 TRENDS_SYSTEM = (
-    "You are a market analyst. You search the live web and report what competitors claim, what "
-    "register of copy is landing, and which conversation is worth attaching to. You report what "
+    "You are a cultural zeitgeist and market trend researcher. You search the live web and report "
+    "what competitors claim, viral hype words landing right now, the universal human nightmare "
+    "developers/founders secretly live with, and the aspirational unlocked dream. You report what "
     "you find with URLs. You answer with JSON and nothing else."
 )
 
 _PROMPT_TEMPLATE = """\
 Search the live web and report the market this product is entering.
 
-Extract all three trend kinds:
+Extract all trend kinds:
 
 - Category. What competing and adjacent products claim right now, with the language they use,
   quoted from the page. This is what makes a swap test runnable, so the `language` list must be
   the competitor's own words, not a paraphrase.
 - Style. What register of copy is currently landing, so the story reads current rather than dated.
 - Cultural. The conversation worth attaching to, with the URL and why it matters here.
+- Human Nightmare. The universal emotional pain, exhaustion, or anxiety developers and founders
+  secretly live with in this category (e.g. babysitting toddlers with root access, 2:00 AM panic).
+- Trending Hype Words. Viral, high-energy hype words and phrases currently landing in discussions on
+  X, Reddit, and Hacker News.
+- Unlocked Dream. The ultimate aspirational future beyond current limits that humans actually crave
+  (e.g. solo founder out-shipping 50 engineers, uninterrupted 8 hours of sleep).
 
 Then pick the market sophistication stage (Schwartz) and say why:
 - virgin: no one has heard the claim, so state it.
@@ -71,6 +78,9 @@ def build_trends_prompt(claims: dict, *, searched_at: str) -> str:
         '"sophistication_stage": "virgin|crowded|jaded|exhausted", "stage_note": ""}, '
         '"style": {"register": "", "notes": [""]}, '
         '"cultural": [{"moment": "", "url": "", "relevance": ""}], '
+        '"human_nightmare": "", '
+        '"trending_hype_words": [""], '
+        '"unlocked_dream": "", '
         '"searched_at": ""}'
     )
     return _PROMPT_TEMPLATE.format(

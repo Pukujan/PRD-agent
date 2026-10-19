@@ -16,6 +16,7 @@ def load(path: Path) -> dict:
 def test_the_prompt_names_all_three_trend_kinds_and_the_stage_question(pcm_run: Path) -> None:
     prompt = trends.build_trends_prompt(load(pcm_run / "claims.json"), searched_at="2026-10-13")
     assert "Category." in prompt and "Style." in prompt and "Cultural." in prompt
+    assert "Human Nightmare." in prompt and "Trending Hype Words." in prompt and "Unlocked Dream." in prompt
     assert "virgin" in prompt and "crowded" in prompt and "jaded" in prompt and "exhausted" in prompt
     assert "Stores a project's working memory as ordinary Markdown and JSON files in Git" in prompt  # the artifact's own claim reaches the search
 

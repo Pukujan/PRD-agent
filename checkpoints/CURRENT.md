@@ -1,6 +1,6 @@
 # Current Repository Checkpoint
 
-<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":"PRA-0003","active_task_file":"tasks/TASK-PRA-0003-story-first-hype-engine.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 This is an as-of projection; live GitHub issues own progression. Link the owning leaf, parent ancestry and dependencies for active work.
 
@@ -17,7 +17,10 @@ Phase: bootstrap.
 
 ## Active
 
-- none.
+- `PRA-0003`: Enforce story-first dream creation, cultural zeitgeist hunting, and anti-audit gates.
+  - Leaf issue: https://github.com/Pukujan/PRD-agent/issues/12
+  - Branch: `task/PRA-0003-story-first-hype-engine`
+  - Completed: Anti-audit gates (`audit_jargon`, `code_path_in_prose`, `feature_before_story`), em-dash (`--` and `—`) bans, removal of footer from `story.py`, cultural zeitgeist hunting in `trends.py`, nightmare/dream scenes in `positioning.py`, clean gold-standard `stories/acs-hot-loader.md`, and 149 passing tests.
 
 ## Queued
 
@@ -30,4 +33,5 @@ None known.
 
 ## Next atomic action
 
-Await owner verdict on `stories/acs-hot-loader.md` and `docs/FIRST_TARGET.md`, or prioritize follow-up issues #10 and #11.
+Run continuity checkpoint, open PR on GitHub, verify CI gates, and merge.
+

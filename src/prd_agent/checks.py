@@ -28,9 +28,13 @@ REVIEW = "review"
 
 _FENCE = re.compile(r"^\s*(?:```|~~~)")
 _TABLE_ROW = re.compile(r"^\s*\|")
+_DIVIDER = re.compile(r"^\s*[-*_]{3,}\s*$")
 _HEADING = re.compile(r"^(#{1,6})\s+(.*)$")
 _BOLD_QUESTION = re.compile(r"^\s*\*\*.+\?\*\*")
 _EM_DASH = re.compile(r"[\u2014\u2013]")
+AUDIT_JARGON = re.compile(r"(?i)\b(?:proof table|audit trail|compliance report|verification status|evidence:\s*|status:\s*(?:verified|claimed|unknown))\b")
+INTERNAL_PATH = re.compile(r"\b(?:modules|src|tests|\.github)\/[A-Za-z0-9_\-\.\/]+")
+FEATURE_BEFORE_STORY = re.compile(r"(?i)\b(?:features?:|key features|feature list|under the hood|technical architecture|implementation details)\b")
 _HYPE = re.compile(r"!|\?!")
 _EMOJI_LEAD = re.compile(r"^\s*(?:[-*+]\s+|\#{1,6}\s+)[\U0001F300-\U0001FAFF\u2600-\u27BF]")
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
@@ -103,7 +107,7 @@ INTENSIFIERS = frozenset(
 )
 REFLEXIVE_THREE = re.compile(r"(?i)\b(\w+),\s+(\w+),?\s+and\s+(\w+)[.!?\n]")
 FALSE_RANGE = re.compile(r"(?i)\bfrom\s+[a-z]+\s+to\s+[a-z]+\b")
-ORDERED_ITEM = re.compile(r"^\s*\d+[.)]\s+")
+ORDERED_ITEM = re.compile(r"^\s*(?:#{1,6}\s+)?\d+[.)]\s+")
 
 
 @dataclass(frozen=True)
@@ -215,6 +219,21 @@ def split_sections(markdown: str) -> list[Section]:
     return sections
 
 
+def has_ascii_em_dash(text: str) -> bool:
+    """Detect ASCII double-hyphen em dashes (--) in prose, ignoring inline code and CLI flags."""
+    clean = re.sub(r"`[^`]*`", "", text)
+    if _DIVIDER.match(clean):
+        return False
+    for m in re.finditer(r"(?<!-)--(?!-)", clean):
+        start, end = m.start(), m.end()
+        before = clean[:start]
+        after = clean[end:]
+        if (not before or before[-1].isspace() or before[-1] in "('\"") and after and after[0].isalpha():
+            continue
+        return True
+    return False
+
+
 def _prose_lines(section: Section) -> list[tuple[int, str]]:
     """The lines a tell can live on: no fences, no table rows, no fenced content."""
     out: list[tuple[int, str]] = []
@@ -223,7 +242,7 @@ def _prose_lines(section: Section) -> list[tuple[int, str]]:
         if _FENCE.match(line):
             in_fence = not in_fence
             continue
-        if in_fence or _TABLE_ROW.match(line):
+        if in_fence or _TABLE_ROW.match(line) or _DIVIDER.match(line):
             continue
         out.append((section.start_line + offset, line))
     return out
@@ -233,7 +252,7 @@ def _sentences(text: str) -> list[str]:
     return [part.strip() for part in _SENTENCE_SPLIT.split(text.strip()) if part.strip()]
 
 
-def _check_prose(section: Section) -> list[Finding]:
+def _check_prose(section: Section, is_problem: bool = False) -> list[Finding]:
     findings: list[Finding] = []
     for line, raw in _prose_lines(section):
         text = raw.strip()
@@ -241,9 +260,22 @@ def _check_prose(section: Section) -> list[Finding]:
             continue
         stripped = _HEADING.sub(r"\2", text).replace("**", "").strip()
         is_bold_question = bool(_BOLD_QUESTION.match(text))
-        if (section.name == "hero" or _HEADING.match(text)) and _EM_DASH.search(text):
+        is_short = section.name == "hero" or bool(_HEADING.match(text))
+        if is_short and (_EM_DASH.search(text) or has_ascii_em_dash(text)):
             findings.append(Finding("em_dash_short", BAN, section.name, line, text,
                                     "em dashes are banned in headings and the hero"))
+        elif has_ascii_em_dash(text):
+            findings.append(Finding("ascii_em_dash", BAN, section.name, line, text,
+                                    "double-hyphen em dashes (--) are banned; use periods or commas"))
+        if AUDIT_JARGON.search(text):
+            findings.append(Finding("audit_jargon", BAN, section.name, line, text,
+                                    "audit terminology is banned from marketing copy"))
+        if INTERNAL_PATH.search(text):
+            findings.append(Finding("code_path_in_prose", BAN, section.name, line, text,
+                                    "internal file paths are banned from marketing copy"))
+        if is_problem and FEATURE_BEFORE_STORY.search(text):
+            findings.append(Finding("feature_before_story", BAN, section.name, line, text,
+                                    "story and human nightmare must come before features and technical architecture"))
         if _HYPE.search(text):
             findings.append(Finding("hype_punctuation", BAN, section.name, line, text, "no exclamation points"))
         if _EMOJI_LEAD.match(text):
@@ -388,8 +420,10 @@ def check_story(body: str) -> CheckReport:
     body, _ = split_body_footer(body)
     sections = split_sections(body)
     findings: list[Finding] = []
+    body_sections = [s for s in sections if s.name != "hero"]
+    discomfort_name = body_sections[0].name if body_sections else None
     for section in sections:
-        findings.extend(_check_prose(section))
+        findings.extend(_check_prose(section, is_problem=(section.name == "hero" or section.name == discomfort_name)))
         findings.extend(_check_caps(section))
     findings.extend(check_beats(body))
     return CheckReport(findings=tuple(findings), sections=tuple(sections))

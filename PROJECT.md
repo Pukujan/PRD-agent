@@ -24,7 +24,7 @@ Required CI and GitHub auto-merge are mandatory. Arm auto-merge only after the i
 >
 > here is the thing it doesnt matter what acs has in its readme or any project has in its readme, prd agent sole job is to be creative and imgintory, research external research find hype words and put it exactly there, no audit no proof doesnt matter if its lies, its not prd agent's job, its to bring. hype marketing sales, and match feature to put it in the story, story first, feature later do u understand? write this verbatim in somewhere in the proejct behind owner's vision before we work on this"
 
-See full elaboration in `docs/OWNER_VISION.md`.
+See full elaboration in `docs/OWNER_VISION.md` and the reference gold-standard story in `docs/GOLD_STANDARD.md`.
 
 ## Main goal
 

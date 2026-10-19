@@ -23,34 +23,37 @@ _FENCE_WRAPPER = re.compile(r"^```[a-zA-Z]*\n(.*?)\n?```$", re.DOTALL)
 STORY_SYSTEM = (
     "You are an expert conversion copywriter working from a positioning brief that was derived "
     "from the product's own artifact. You write the marketing page. Hype is uncapped: you are "
-    "selling the reader's future, not inventorying the product. You never invent a fact the "
-    "brief does not carry. You never write the proof section, the open flags or the self-check "
-    "paragraph; the pipeline appends those. Follow the vendored copywriting skill and its "
-    "references exactly, including its self-check, and return the page body as markdown only."
+    "selling the reader's future, not inventorying the product. Story first, feature later: attack "
+    "the human nightmare, paint the unlocked dream, and use trending cultural hype words. You never "
+    "invent a fact the brief does not carry regarding technical capability, but you sell the "
+    "aspiration without limits. You never write an audit section, proof table, or open flags. "
+    "Follow the vendored copywriting skill and its references exactly, including its self-check, "
+    "and return the page body as markdown only."
 )
 
 _PROMPT_TEMPLATE = """\
 Write the marketing page body for this product.
 
 Rules, in order of importance:
-1. Sell the reader's future. The page is not an inventory of what the product does and does not
-   do. Every section should make the reader want the state the product creates.
+1. Story first, feature later. Sell the reader's future and dream. Attack the human nightmare they
+   secretly live with visceral emotion. The page is not an inventory of what the product does and does
+   not do. Every section should make the reader crave the transformed state.
 2. Write only what the brief and the claims support. Never invent a fact the brief does not carry:
    if a claim is not supported, leave it out rather than inventing it. Never state an `unknown`
    claim as fact.
 3. Never contradict what the artifact is. A command line tool is never sold as a graphical app.
 4. Hype is uncapped. Invented-sounding numbers are allowed unless they contradict the claims.
-5. Do not write the footer ("### Proof and open items"), the proof table, the open flags or the
-   self-check paragraph. Do not write the marker `[NEED:` anywhere in the body: the pipeline
-   appends the flags it already holds. If a claim needs evidence, leave the claim out and it will
-   stay flagged in the footer.
+5. Zero audit clutter. Do not write the footer ("### Proof and open items"), the proof table, the open
+   flags, or the self-check paragraph. Do not cite internal code paths (`modules/...`, `src/...`).
+   Do not write the marker `[NEED:` anywhere in the body: the output is 100% pure story and marketing pitch.
 6. Structure: a hero (headline, subhead, one line of install or entry), then a problem section
    that names the reader's situation in the second person, then a section describing the better
    state, then a numbered path to action with at least three steps, then a closing call to
    action. Competitor positioning stays out of the pitch body.
-7. Run the skill's own self-check before you answer. Banned patterns fail the gate and cost a
+7. Zero em dashes. Double-hyphen em dashes (--) and em dashes in short copy are banned; use periods or
+   commas. Run the skill's own self-check before you answer. Banned patterns fail the gate and cost a
    rewrite: contrast reveals, negation lists, trailing pile-ons, self-answered questions, colon
-   reveals, stock phrases, hype punctuation, and em dashes in headings or the hero.
+   reveals, stock phrases, hype punctuation, and em dashes.
 
 The vendored skill and its references follow. Obey them.
 
@@ -252,14 +255,7 @@ def story(
         body, harvested = clean_body(llm.complete(system=STORY_SYSTEM, prompt=prompt))
         report = check_story(body)
         if report.passed():
-            footer = build_footer(
-                claims=claims,
-                positioning=positioning,
-                trends=trends,
-                report=report,
-                extra_flags=harvested,
-            )
-            return assemble_story(body, footer), report
+            return f"{body.strip()}\n", report
     assert report is not None
     failed = ", ".join(sorted({finding.rule for finding in report.bans + report.cap_violations()}))
     raise StoryGateError(

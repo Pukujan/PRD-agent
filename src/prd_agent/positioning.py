@@ -49,6 +49,11 @@ Rules:
 4. Hype is uncapped, with one exception: nothing here may contradict what the artifact is.
 5. `flags` collects what you could not derive. Each flag names the claim, the kind of need
    (proof, differentiator, mechanism or audience) and the evidence that would unlock it.
+6. Story first, feature later. Ground the discomfort in a concrete, relatable human nightmare scene
+   (e.g. 2:00 AM panic, frantic alt-tabbing between crashing agent terminals). Ground the vision in
+   an unlocked dream scene (e.g. laptop closed at 6 PM, sleeping 8 hours uninterrupted while features
+   ship). Provide a sharp, relatable human metaphor. Features and mechanisms are introduced only as
+   the heroes that resolve the nightmare.
 
 Answer with exactly this JSON object and no prose around it:
 
@@ -123,6 +128,7 @@ def build_positioning_prompt(claims: dict, trends: dict, *, answers: str | None 
         '{"schema": "prd-agent.positioning.v1", '
         '"audience": {"who": "", "situation": "", "trigger": ""}, '
         '"discomfort": "", "vision": "", "path": "", "alternative": "", "differentiator": "", '
+        '"nightmare_scene": "", "dream_scene": "", "metaphor": "", '
         '"swap_test": {"passed": false, "note": ""}, '
         '"flags": [{"id": "N-001", "need": "proof", "claim": "", "unlock": ""}]}'
     )

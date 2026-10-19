@@ -56,7 +56,7 @@ def test_autonomous_run_writes_every_intermediate_document_and_the_story(
     assert result.story_path.is_file()
     assert result.report.passed() is True
     assert load(result.positioning_path)["schema"] == "prd-agent.positioning.v1"
-    assert "### Proof and open items" in result.story_path.read_text(encoding="utf-8")
+    assert "### Proof and open items" not in result.story_path.read_text(encoding="utf-8")
     assert [flag["need"] for flag in result.flags] == ["proof", "proof", "proof", "differentiator"]
 
 def test_the_stage_order_is_intake_then_positioning_then_story(tmp_path: Path, repo_root: Path, pcm_run: Path) -> None:
@@ -161,7 +161,7 @@ def test_the_loop_is_the_same_codepath_in_both_modes(
     assert autonomous.story_path.read_text(encoding="utf-8") == human.story_path.read_text(encoding="utf-8")
 
 
-def test_an_unanswered_flag_stays_in_the_footer(tmp_path: Path, repo_root: Path, pcm_run: Path) -> None:
+def test_an_unanswered_flag_stays_in_positioning_and_flags(tmp_path: Path, repo_root: Path, pcm_run: Path) -> None:
     artifact = tmp_path / "mini"
     artifact.mkdir()
     (artifact / "README.md").write_text("# mini\n", encoding="utf-8")
@@ -177,8 +177,9 @@ def test_an_unanswered_flag_stays_in_the_footer(tmp_path: Path, repo_root: Path,
         autonomous=False, ask=lambda flags: {},
     )
     page = result.story_path.read_text(encoding="utf-8")
-    assert page.count("`[NEED: proof]`") == 3
-    assert result.flags
+    assert "`[NEED:" not in page
+    assert [f["need"] for f in result.flags].count("proof") == 3
+
 
 
 def test_answers_from_file_reads_a_flag_id_map(tmp_path: Path) -> None:

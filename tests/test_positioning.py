@@ -99,3 +99,12 @@ def test_the_prompt_carries_the_competitors_and_the_owner_answers(pcm_run: Path)
     assert "Mem0" in prompt
     assert "jaded" in prompt
     assert "The owner says there are 40 adopters." in prompt
+
+
+def test_the_positioning_prompt_requires_nightmare_and_dream_scenes(pcm_run: Path) -> None:
+    prompt = positioning.build_positioning_prompt(load(pcm_run / "claims.json"), load(FIXTURE))
+    assert "Story first, feature later" in prompt
+    assert "nightmare scene" in prompt
+    assert "dream scene" in prompt
+    assert "metaphor" in prompt
+
