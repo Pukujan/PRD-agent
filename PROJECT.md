@@ -18,22 +18,35 @@ Before every push, synchronize relevant docs and task/checkpoint projections, CU
 Required CI and GitHub auto-merge are mandatory. Arm auto-merge only after the increment's final push: a later push races the merge window and strands outside accepted history. Verify protection, required reviews/checks on the exact current-base or merge-queue candidate, and auto-merge; missing, failed, skipped, stale or unverified gates fail closed: no completion or cleanup. After CI/merge, append the exact check results, PR/merge SHA and live issue status to the leaf and link the parent update; fetch and verify accepted history. Reconcile material doc/status corrections in a new synchronized increment. Receipt-only transitions need no recursive doc commit: docs retain an explicit as-of/pending state and point to the live issue. Never label local-only or merely pushed work delivered. Preserve unsafe resources and keep incomplete issues open.
 <!-- pcm:github-progression:end -->
 
+## Owner vision
+
+> "ai sounds like ai, ai cant invent imaginary scenario and stories that human can relate to, everything ai do sounds like an audit trail, corporate and tech jargon, people dont care about this, no strong story to tell, ai can write fan fics that expands huge novels, can research recent events and trends in google x and everywhere about whats trending, yet cant invent a story human can relate too at all and use the language they will, noone cares wht agents do, noone cares that cursor anc claude collided, what do human care about, ai working properly, the fact that prd agent couldnt think about this and research on thsi exact problem is a big failure,
+>
+> here is the thing it doesnt matter what acs has in its readme or any project has in its readme, prd agent sole job is to be creative and imgintory, research external research find hype words and put it exactly there, no audit no proof doesnt matter if its lies, its not prd agent's job, its to bring. hype marketing sales, and match feature to put it in the story, story first, feature later do u understand? write this verbatim in somewhere in the proejct behind owner's vision before we work on this"
+
+See full elaboration in `docs/OWNER_VISION.md`.
+
 ## Main goal
 
-Describe the durable project goal.
+Transform any builder's repository or artifact into a high-converting, human-relatable marketing story and dream. The pipeline prioritizes story first and fits features into that narrative later. It uses live trend research to identify hype language, cultural resonance, and imaginative scenarios that customers connect with emotionally.
 
 ## Why
 
-Explain why the project exists.
+AI language models naturally collapse into audit trails, compliance checklists, and corporate jargon. They obsess over technical mechanics (e.g. file structures, tool collisions, code verification) which customers do not care about. Humans care about technology working properly and solving real pain. PRD-agent exists to break this failure mode by forcing the AI to lead with an imaginative human story, uncapped hype, and emotional resonance.
 
 ## Scope
 
-Describe what is in scope.
+- Creative story generation: Hook, relatable human struggle, transformative vision, and compelling path to action.
+- Live cultural and category trend research: Mining live discussions, trending language, and emotional hooks across developer and customer spaces.
+- Fitting artifact capabilities into the narrative: Matching features to the story beats rather than using features to dictate the structure.
+- Hard anti-audit enforcement: Prohibiting audit checklists, file:line verification tables, proof pedantry, and compliance language from reaching any marketing copy.
 
 ## Non-goals
 
-Describe what is explicitly out of scope.
+- Technical auditing, repository compliance verification, or code coverage reporting.
+- Printing verification tables, proof footnotes, file:line citations, or checklists of missing features on customer-facing stories.
+- Fact-policing or flattening hype to match literal implementation constraints (hype is uncapped).
 
 ## Definition of success
 
-Describe durable success criteria.
+The generated product story reads as a compelling, human narrative that sells the dream and the outcome. A stranger reading the story understands immediately why they want it, without seeing a single trace of technical audit jargon, verification tables, or AI slop.
