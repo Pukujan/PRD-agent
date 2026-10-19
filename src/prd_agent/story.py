@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Sequence
 
 from prd_agent import flags
 from prd_agent.checks import FOOTER_HEADING, CheckReport, check_story
@@ -37,9 +38,15 @@ _PROMPT_TEMPLATE = """\
 Write the marketing page body for this product.
 
 Rules, in order of importance:
-1. Story first, feature later. Sell the reader's future and dream. Attack the human nightmare they
-   secretly live with visceral emotion. The page is not an inventory of what the product does and does
-   not do. Every section should make the reader crave the transformed state.
+1. Cultural Manifesto & Belief Inversion (Story First): Sell the reader's future and dream.
+   Attack the cultural enemy and false dogma with visceral emotion. Contrast the cynical status
+   quo against the sovereign rebellion belief where the user is in total command.
+   Enforce the 5-Beat Manifesto structure:
+   - Beat 1: The Callout (Name the false dogma / cultural enemy everyone is sick of).
+   - Beat 2: The Visceral Nightmare (Describe the exhausting, degrading reality of living under that enemy).
+   - Beat 3: The Sovereign Dream (Paint the transformed, empowered reality: rocket science / flying cars for creativity or velocity, where the human holds the wheel).
+   - Beat 4: The Code Shield / Weaponized Mechanisms (Introduce the concrete verified features from the artifact not as boring inventory, but as the mathematical shield and engine making that dream permanent).
+   - Beat 5: The Battle Cry / Action (Direct, undeniable path to action).
 2. Write only what the brief and the claims support. Never invent a fact the brief does not carry:
    if a claim is not supported, leave it out rather than inventing it. Never state an `unknown`
    claim as fact.
@@ -105,7 +112,7 @@ def build_story_prompt(
     positioning: dict,
     claims: dict,
     trends: dict,
-    exemplars: list[dict] = (),
+    exemplars: Sequence[dict] = (),
     hype: str | None = None,
     persona: str | None = None,
 ) -> str:
@@ -262,7 +269,7 @@ def build_footer(
     positioning: dict,
     trends: dict,
     report: CheckReport,
-    extra_flags: list[dict] = (),
+    extra_flags: Sequence[dict] = (),
 ) -> str:
     merged = flags.merge_flags(list(positioning.get("flags", [])), list(extra_flags))
     swap = positioning.get("swap_test", {})
@@ -293,7 +300,7 @@ def story(
     positioning: dict,
     trends: dict,
     llm: LLM,
-    exemplars: list[dict] = (),
+    exemplars: Sequence[dict] = (),
     max_rewrites: int = MAX_REWRITES,
     hype: str | None = None,
     persona: str | None = None,

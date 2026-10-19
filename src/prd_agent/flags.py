@@ -7,7 +7,7 @@ unlock it. Human mode puts them to the owner; autonomous mode ships them in the 
 from __future__ import annotations
 
 import re
-from typing import Callable
+from collections.abc import Callable
 
 from prd_agent.errors import StageError
 

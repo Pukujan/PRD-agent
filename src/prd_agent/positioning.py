@@ -56,6 +56,10 @@ Rules:
    an unlocked dream scene (e.g. laptop closed at 6 PM, sleeping 8 hours uninterrupted while features
    ship). Provide a sharp, relatable human metaphor. Features and mechanisms are introduced only as
    the heroes that resolve the nightmare.
+7. Cultural Enemy, Rebellion Belief, and Weaponized Mechanisms:
+   - cultural_enemy: The cynical industry status quo, cheap shortcut, or false dogma this product declares war on (e.g. AI slop generation, 20-person committee bureaucracy, 15-minute CI queues).
+   - rebellion_belief: The empowering counter-truth that returns sovereignty and supersonic velocity to the user/builder (e.g. human creator in sovereign command, superhuman execution without sacrificing craftsmanship).
+   - weaponized_mechanisms: A list of strings mapping the artifact's concrete code mechanisms as impenetrable shields that enforce the rebellion belief and banish the cultural enemy.
 
 Answer with exactly this JSON object and no prose around it:
 
@@ -148,6 +152,7 @@ def build_positioning_prompt(
         '"audience": {"who": "", "situation": "", "trigger": ""}, '
         '"discomfort": "", "vision": "", "path": "", "alternative": "", "differentiator": "", '
         '"nightmare_scene": "", "dream_scene": "", "metaphor": "", '
+        '"cultural_enemy": "", "rebellion_belief": "", "weaponized_mechanisms": [""], '
         '"swap_test": {"passed": false, "note": ""}, '
         '"flags": [{"id": "N-001", "need": "proof", "claim": "", "unlock": ""}]}'
     )

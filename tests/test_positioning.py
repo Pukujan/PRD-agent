@@ -142,4 +142,11 @@ def test_the_positioning_prompt_carries_persona_directive(pcm_run: Path) -> None
     assert result["persona"] == "normie"
 
 
+def test_the_positioning_prompt_requires_cultural_enemy_and_weaponized_mechanisms(pcm_run: Path) -> None:
+    prompt = positioning.build_positioning_prompt(load(pcm_run / "claims.json"), load(FIXTURE))
+    assert "cultural_enemy" in prompt
+    assert "rebellion_belief" in prompt
+    assert "weaponized_mechanisms" in prompt
+
+
 

@@ -10,7 +10,11 @@ requires-python = ">=3.12"
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=8"]
+dev = [
+    "pytest>=8",
+    "mypy>=1.10",
+    "ruff>=0.4",
+]
 
 [project.scripts]
 prd-agent = "prd_agent.cli:main"
@@ -25,3 +29,17 @@ where = ["src"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 norecursedirs = ["fixtures"]
+
+[tool.mypy]
+python_version = "3.12"
+warn_unused_configs = true
+check_untyped_defs = true
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+

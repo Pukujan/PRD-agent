@@ -14,6 +14,7 @@ from prd_agent.errors import StageError
 from prd_agent.llm import default_llm
 from prd_agent.pipeline import answers_from_file, close_flag_loop, run
 
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="prd-agent",

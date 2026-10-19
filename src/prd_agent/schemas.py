@@ -48,6 +48,8 @@ TRENDS_SPEC: dict[str, Any] = {
     "human_nightmare": "opt:str",
     "trending_hype_words": "opt:list[str]",
     "unlocked_dream": "opt:str",
+    "false_dogma": "opt:str",
+    "rebellion_belief": "opt:str",
     "searched_at": "str",
 }
 
@@ -62,11 +64,15 @@ POSITIONING_SPEC: dict[str, Any] = {
     "nightmare_scene": "opt:str",
     "dream_scene": "opt:str",
     "metaphor": "opt:str",
+    "cultural_enemy": "opt:str",
+    "rebellion_belief": "opt:str",
+    "weaponized_mechanisms": "opt:list[str]",
     "hype_level": "opt:str",
     "persona": "opt:str",
     "swap_test": {"passed": "bool", "note": "str"},
     "flags": ("list", {"id": "str", "need": "str", "claim": "str", "unlock": "str"}),
 }
+
 
 
 def validate(doc: Any, spec: Any, path: str = "$") -> list[str]:

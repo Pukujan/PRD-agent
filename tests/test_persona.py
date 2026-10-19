@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import pytest
-
 from prd_agent.persona import (
     DEFAULT_PERSONA,
     PERSONAS,

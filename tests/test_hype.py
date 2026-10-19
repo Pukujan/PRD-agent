@@ -8,6 +8,7 @@ from prd_agent.hype import (
     normalize_hype_level,
 )
 
+
 def test_default_hype_level_is_1000():
     assert DEFAULT_HYPE_LEVEL == "1000"
     tier = get_hype_tier(None)

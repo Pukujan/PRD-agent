@@ -5,6 +5,7 @@ from pathlib import Path
 
 from prd_agent import cli
 
+
 def test_the_documented_invocation_parses() -> None:
     args = cli.build_parser().parse_args(["../some-repo"])
     assert args.artifact_path == "../some-repo"

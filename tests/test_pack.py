@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+
 import pytest
 
-from prd_agent.hype import DEFAULT_HYPE_LEVEL
-from prd_agent.llm import LLM
 from prd_agent.pack import (
     PackResult,
     assert_no_em_dashes,
@@ -16,7 +15,6 @@ from prd_agent.pack import (
     generate_show_hn,
     purge_em_dashes,
 )
-from prd_agent.persona import DEFAULT_PERSONA
 
 
 class FakeLLM:

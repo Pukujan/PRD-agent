@@ -10,6 +10,7 @@ from prd_agent.errors import ModelOutputError, SchemaError
 from prd_agent.llm import FakeLLM
 from prd_agent.schemas import validate_trends
 
+
 def load(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -17,6 +18,7 @@ def test_the_prompt_names_all_three_trend_kinds_and_the_stage_question(pcm_run: 
     prompt = trends.build_trends_prompt(load(pcm_run / "claims.json"), searched_at="2026-10-13")
     assert "Category." in prompt and "Style." in prompt and "Cultural." in prompt
     assert "Human Nightmare." in prompt and "Trending Hype Words." in prompt and "Unlocked Dream." in prompt
+    assert "False Dogma." in prompt and "Rebellion Belief." in prompt
     assert "virgin" in prompt and "crowded" in prompt and "jaded" in prompt and "exhausted" in prompt
     assert "Stores a project's working memory as ordinary Markdown and JSON files in Git" in prompt  # the artifact's own claim reaches the search
 
