@@ -1,6 +1,6 @@
 # Current Repository Checkpoint
 
-<!-- continuity:current {"active_task":"PRA-0008","active_task_file":"tasks/TASK-PRA-0008-persona-launch-pack.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 This is an as-of projection; live GitHub issues own progression. Link the owning leaf, parent ancestry and dependencies for active work.
 
@@ -19,10 +19,11 @@ Phase: bootstrap.
 - `PRA-0005`: Bound intake claim extraction (12-18 claims) and added truncation salvage in `salvage_json()`. Merged via PR #16 (commit `4abc083`). Issue #10 closed.
 - `PRA-0006`: Handled raw text search snippets from proxy providers during trends analysis with automated secondary synthesis, and supported `PRD_AGENT_NO_SEARCH_TOOL` tool suppression. Merged via PR #17 (commit `6608311`). Issue #11 closed.
 - `PRA-0007`: Added 4-tier Hype-to-Honesty Dial with interactive pre-generation calibration (Level 1000, 750, 500, 250), CLI `--hype` flag, and prompt injection. Merged via PR #19 (commit `51bbc4d`). Issue #18 closed.
+- `PRA-0008`: Added audience persona targeting (solopreneur, enterprise, normie) and multi-asset launch pack generation (copy.json, launch_thread.md, show_hn.md, pitch_deck.md) under runs/<name>/pack/. Merged via PR #21 (commit `d901318`). Issue #20 closed.
 
 ## Active
 
-- `PRA-0008`: Add audience persona targeting and multi-asset launch pack generation (leaf issue https://github.com/Pukujan/PRD-agent/issues/20).
+None.
 
 ## Queued
 
@@ -34,4 +35,4 @@ None known.
 
 ## Next atomic action
 
-Commit product code and documentation, run continuity checkpoint, push branch, and open PR.
+Await user direction or new feature milestones.
