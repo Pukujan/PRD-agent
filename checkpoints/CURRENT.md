@@ -1,6 +1,6 @@
 # Current Repository Checkpoint
 
-<!-- continuity:current {"active_task":"PRA-0010","active_task_file":"tasks/TASK-PRA-0010-repo-integrity-and-belief-inversion.md","protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
+<!-- continuity:current {"active_task":null,"active_task_file":null,"protocol_version":"0.1.0-draft","schema":"project-continuity.current.v1"} -->
 
 This is an as-of projection; live GitHub issues own progression. Link the owning leaf, parent ancestry and dependencies for active work.
 
@@ -21,10 +21,11 @@ Phase: bootstrap.
 - `PRA-0007`: Added 4-tier Hype-to-Honesty Dial with interactive pre-generation calibration (Level 1000, 750, 500, 250), CLI `--hype` flag, and prompt injection. Merged via PR #19 (commit `51bbc4d`). Issue #18 closed.
 - `PRA-0008`: Added audience persona targeting (solopreneur, enterprise, normie) and multi-asset launch pack generation (copy.json, launch_thread.md, show_hn.md, pitch_deck.md) under runs/<name>/pack/. Merged via PR #21 (commit `d901318`). Issue #20 closed.
 - `PRA-0009`: Automated runner discovery (proxy URL normalization, API key fallback, and model fallback), em-dash auto-sanitization before gating, and `--readme` direct output writing. Merged via PR #23 (commit `75cd81a`). Issue #22 closed.
+- `PRA-0010`: Armed repository maintenance gates with strict type checking (mypy 0 errors), import sorting and linting (ruff 0 errors), and `.continuity/documents.json` inventory tracking. Implemented the dynamic belief inversion engine (`false_dogma`, `rebellion_belief`, and `weaponized_mechanisms`) with 5-Beat Manifesto generation across story and launch pack. Merged via PR #25 (commit `43f9541`). Issue #24 closed.
 
 ## Active
 
-- Task `PRA-0010`: Arm repository maintenance gates (mypy, ruff, documents inventory) and build the dynamic belief inversion engine. Lineage: leaf https://github.com/Pukujan/PRD-agent/issues/24, parent: none. Branch: `task/PRA-0010-repo-integrity-and-belief-inversion`.
+None.
 
 ## Queued
 
@@ -36,7 +37,7 @@ None known.
 
 ## Next atomic action
 
-Commit product and docs, create pull request, verify CI checks, and merge.
+Await owner direction or next feature increment.
 
 
 
