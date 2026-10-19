@@ -63,6 +63,11 @@ Rules, in order of importance:
    commas. Run the skill's own self-check before you answer. Banned patterns fail the gate and cost a
    rewrite: contrast reveals, negation lists, trailing pile-ons, self-answered questions, colon
    reveals, stock phrases, hype punctuation, and em dashes.
+8. Strict Anti-Leakage & No Jargon Dumps:
+   - NEVER output prompt engineering meta-labels (Do not write "Level 1000", "solopreneur", "belief inversion", or "Beat 1").
+   - NEVER start sentences with "The false dogma says..." or "The cultural enemy is...". Attack the status quo directly with vivid assertions.
+   - NEVER dump alphabet-soup identifiers. Do not list raw model names, quant codes, or internal hashes in a row. Translate every mechanism into a human superpower.
+   - Keep paragraphs short (1 to 3 sentences max) with clean whitespace.
 
 The vendored skill and its references follow. Obey them.
 

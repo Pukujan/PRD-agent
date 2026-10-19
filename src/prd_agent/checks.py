@@ -39,6 +39,12 @@ _HYPE = re.compile(r"!|\?!")
 _EMOJI_LEAD = re.compile(r"^\s*(?:[-*+]\s+|\#{1,6}\s+)[\U0001F300-\U0001FAFF\u2600-\u27BF]")
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
 _WORD = re.compile(r"[A-Za-z][A-Za-z'\-]*")
+META_LABEL_PATTERN = re.compile(
+    r"(?i)\b(?:level\s*(?:1000|750|500|250)|solopreneur\s*,\s*belief\s+inversion|belief\s+inversion\s*:|beat\s*[1-5]\s*:)\b"
+)
+TEMPLATE_OPENER_PATTERN = re.compile(
+    r"(?i)\b(?:the\s+false\s+dogma\s+says|the\s+cultural\s+enemy\s+is|the\s+rebellion\s+belief\s+is)\b"
+)
 
 CONTRAST_REVEAL = (
     re.compile(
@@ -270,6 +276,12 @@ def _check_prose(section: Section, is_problem: bool = False) -> list[Finding]:
         if AUDIT_JARGON.search(text):
             findings.append(Finding("audit_jargon", BAN, section.name, line, text,
                                     "audit terminology is banned from marketing copy"))
+        if META_LABEL_PATTERN.search(text):
+            findings.append(Finding("meta_label_leakage", BAN, section.name, line, text,
+                                    "meta-prompt labels are forbidden in customer-facing copy"))
+        if TEMPLATE_OPENER_PATTERN.search(text):
+            findings.append(Finding("template_opener", BAN, section.name, line, text,
+                                    "formulaic template openers are forbidden; attack the status quo directly"))
         if INTERNAL_PATH.search(text):
             findings.append(Finding("code_path_in_prose", BAN, section.name, line, text,
                                     "internal file paths are banned from marketing copy"))
