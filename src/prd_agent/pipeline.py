@@ -16,6 +16,7 @@ from prd_agent import (
     flags,
     flags as flags_module,
     intake,
+    pack as pack_stage,
     positioning as positioning_stage,
     story as story_stage,
     trends as trends_stage,
@@ -24,6 +25,7 @@ from prd_agent.artifact import Artifact, collect_artifact
 from prd_agent.checks import CheckReport, check_story
 from prd_agent.errors import StageError
 from prd_agent.llm import LLM
+from prd_agent.pack import PackResult
 from prd_agent.schemas import TRENDS_SPEC, require_valid
 
 RUNS_DIR = "runs"
@@ -40,6 +42,7 @@ class RunResult:
     flags: list[dict] = field(default_factory=list)
     report: CheckReport | None = None
     awaiting_answers: bool = False
+    pack: PackResult | None = None
 
 def run_dir(root: Path, name: str) -> Path:
     return Path(root) / RUNS_DIR / name
@@ -82,6 +85,8 @@ def run(
     live: bool = True,
     evals_path: Path | None = None,
     hype: str | None = None,
+    persona: str | None = None,
+    pack: bool = False,
 ) -> RunResult:
     """Run intake, trends, positioning and story. Human mode stops at the flag loop."""
     artifact_path = Path(artifact_path)
@@ -111,7 +116,7 @@ def run(
     else:
         trends_doc = trends_stage.analyze(claims, llm)
 
-    positioned = positioning_stage.positioning(claims, trends_doc, llm, hype=hype)
+    positioned = positioning_stage.positioning(claims, trends_doc, llm, hype=hype, persona=persona)
 
     target_run_dir = run_dir(root, name)
     target_story = Path(out) if out is not None else default_out(root, name)
@@ -142,6 +147,7 @@ def run(
                 llm,
                 answers=flags_module.answers_as_prompt(list(positioned.get("flags", [])), supplied),
                 hype=hype,
+                persona=persona,
             )
             _write_json(target_run_dir / "positioning.json", positioned)
             result.flags = list(positioned.get("flags", []))
@@ -155,6 +161,7 @@ def run(
         llm=llm,
         exemplars=exemplars,
         hype=hype,
+        persona=persona,
     )
     target_story.parent.mkdir(parents=True, exist_ok=True)
     target_story.write_text(page, encoding="utf-8")
@@ -168,6 +175,19 @@ def run(
     evals_stage.append_eval(evals_path or evals_stage.EVALS_PATH, record)
     result.report = report
     result.awaiting_answers = False
+
+    if pack:
+        result.pack = pack_stage.generate_pack(
+            run_dir=target_run_dir,
+            claims=claims,
+            trends=trends_doc,
+            positioning=positioned,
+            story=page,
+            llm=llm,
+            hype=hype,
+            persona=persona,
+        )
+
     return result
 
 def close_flag_loop(
@@ -176,6 +196,8 @@ def close_flag_loop(
     llm: LLM,
     answers: dict[str, str],
     hype: str | None = None,
+    persona: str | None = None,
+    pack: bool = False,
 ) -> RunResult:
     """Resume a stopped human-mode run with the owner's answers.
 
@@ -186,20 +208,38 @@ def close_flag_loop(
     trends_doc = json.loads(result.trends_path.read_text(encoding="utf-8"))
     positioned = json.loads(result.positioning_path.read_text(encoding="utf-8"))
     hype_choice = hype or positioned.get("hype_level")
+    persona_choice = persona or positioned.get("persona")
     revised = positioning_stage.positioning(
         claims,
         trends_doc,
         llm,
         answers=flags_module.answers_as_prompt(list(positioned.get("flags", [])), answers),
         hype=hype_choice,
+        persona=persona_choice,
     )
     _write_json(result.positioning_path, revised)
     page, report = story_stage.story(
-        claims=claims, positioning=revised, trends=trends_doc, llm=llm, hype=hype_choice
+        claims=claims,
+        positioning=revised,
+        trends=trends_doc,
+        llm=llm,
+        hype=hype_choice,
+        persona=persona_choice,
     )
     result.story_path.parent.mkdir(parents=True, exist_ok=True)
     result.story_path.write_text(page, encoding="utf-8")
     result.flags = list(revised.get("flags", []))
     result.report = report
     result.awaiting_answers = False
+    if pack:
+        result.pack = pack_stage.generate_pack(
+            run_dir=result.run_dir,
+            claims=claims,
+            trends=trends_doc,
+            positioning=revised,
+            story=page,
+            llm=llm,
+            hype=hype_choice,
+            persona=persona_choice,
+        )
     return result

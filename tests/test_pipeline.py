@@ -272,4 +272,37 @@ def test_pipeline_run_passes_hype_parameter(tmp_path: Path, pcm_run: Path) -> No
     assert result.story_path.is_file()
 
 
+def test_pipeline_run_passes_persona_and_pack(tmp_path: Path, pcm_run: Path) -> None:
+    artifact = tmp_path / "mini"
+    artifact.mkdir()
+    (artifact / "README.md").write_text("# mini\n", encoding="utf-8")
+    copy_deck = json.dumps({
+        "headline": "Zero-Leak Architecture",
+        "subheadline": "Sovereign execution",
+        "superpowers": [],
+        "before_after_table": [],
+        "social_proof_hooks": [],
+        "cta": {"primary": "Contact Sales", "secondary": "Read Docs", "guarantee": "SOC2"},
+    })
+    fake = FakeLLM([
+        (pcm_run / "claims.json").read_text(encoding="utf-8"),
+        (pcm_run / "trends.json").read_text(encoding="utf-8"),
+        (pcm_run / "positioning.json").read_text(encoding="utf-8"),
+        GOOD_BODY,
+        copy_deck,
+        "1/1 Viral tweet",
+        "# Show HN: Launch",
+        "# Slide 1: Pitch",
+    ])
+    result = pipeline.run(artifact, llm=fake, autonomous=True, persona="enterprise", pack=True)
+    assert "ENTERPRISE" in str(fake.calls[2]["prompt"])
+    assert "ENTERPRISE" in str(fake.calls[3]["prompt"])
+    assert result.pack is not None
+    assert result.pack.copy_json_path.is_file()
+    assert result.pack.launch_thread_path.is_file()
+    assert result.pack.show_hn_path.is_file()
+    assert result.pack.pitch_deck_path.is_file()
+
+
+
 

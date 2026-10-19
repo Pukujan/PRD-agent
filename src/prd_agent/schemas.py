@@ -63,6 +63,7 @@ POSITIONING_SPEC: dict[str, Any] = {
     "dream_scene": "opt:str",
     "metaphor": "opt:str",
     "hype_level": "opt:str",
+    "persona": "opt:str",
     "swap_test": {"passed": "bool", "note": "str"},
     "flags": ("list", {"id": "str", "need": "str", "claim": "str", "unlock": "str"}),
 }

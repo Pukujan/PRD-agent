@@ -16,6 +16,7 @@ from prd_agent.checks import FOOTER_HEADING, CheckReport, check_story
 from prd_agent.errors import StoryGateError
 from prd_agent.hype import get_hype_tier
 from prd_agent.llm import LLM
+from prd_agent.persona import get_persona
 from prd_agent.skill import build_skill_context
 
 MAX_REWRITES = 2
@@ -76,6 +77,10 @@ Narrative calibration:
 
 {hype_directive}
 
+Audience persona:
+
+{persona_directive}
+
 {exemplars}
 """
 
@@ -102,8 +107,10 @@ def build_story_prompt(
     trends: dict,
     exemplars: list[dict] = (),
     hype: str | None = None,
+    persona: str | None = None,
 ) -> str:
     tier = get_hype_tier(hype or positioning.get("hype_level"))
+    pers = get_persona(persona or positioning.get("persona"))
     return _PROMPT_TEMPLATE.format(
         skill=build_skill_context(),
         positioning=json.dumps(positioning, indent=2, ensure_ascii=False),
@@ -111,6 +118,7 @@ def build_story_prompt(
         trends=json.dumps(trends, indent=2, ensure_ascii=False),
         exemplars=_exemplar_block(list(exemplars)),
         hype_directive=tier.directive,
+        persona_directive=pers.directive,
     )
 
 def build_rewrite_prompt(
@@ -120,8 +128,10 @@ def build_rewrite_prompt(
     positioning: dict,
     claims: dict,
     hype: str | None = None,
+    persona: str | None = None,
 ) -> str:
     tier = get_hype_tier(hype or positioning.get("hype_level"))
+    pers = get_persona(persona or positioning.get("persona"))
     findings = report.bans + report.cap_violations()
     listed = _bullet_lines(
         [f"{finding.rule} (line {finding.line}, section {finding.section}): {finding.text.strip()}" for finding in findings]
@@ -132,6 +142,7 @@ def build_rewrite_prompt(
         "that. Swapping a banned phrase for a synonym produces a new tell. Keep every section, "
         "keep the numbered path to action, and keep the same structure.\n\n"
         f"Narrative calibration:\n{tier.directive}\n\n"
+        f"Audience persona:\n{pers.directive}\n\n"
         "What failed:\n\n"
         f"{listed}\n\n"
         "The positioning brief, so the rewrite keeps the mechanism and the differentiator:\n\n"
@@ -251,12 +262,14 @@ def story(
     exemplars: list[dict] = (),
     max_rewrites: int = MAX_REWRITES,
     hype: str | None = None,
+    persona: str | None = None,
 ) -> tuple[str, CheckReport]:
     """Draft, gate, rewrite, and return (whole page, report of the accepted draft)."""
     body = ""
     report: CheckReport | None = None
     harvested: list[dict] = []
     tier = get_hype_tier(hype or positioning.get("hype_level"))
+    pers = get_persona(persona or positioning.get("persona"))
     for attempt in range(max_rewrites + 1):
         if attempt == 0:
             prompt = build_story_prompt(
@@ -265,6 +278,7 @@ def story(
                 trends=trends,
                 exemplars=list(exemplars),
                 hype=tier.level,
+                persona=pers.id,
             )
         else:
             assert report is not None
@@ -274,6 +288,7 @@ def story(
                 positioning=positioning,
                 claims=claims,
                 hype=tier.level,
+                persona=pers.id,
             )
         body, harvested = clean_body(llm.complete(system=STORY_SYSTEM, prompt=prompt))
         report = check_story(body)

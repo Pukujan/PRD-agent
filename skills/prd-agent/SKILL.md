@@ -37,6 +37,8 @@ python -m prd_agent <path-to-target-repo>
 | `--no-web` | `False` | Disable live web search (requires `--trends-file`) |
 | `--answers-file PATH`| `None` | Pass a JSON file of flag answers for automated flag closure |
 | `--hype LEVEL` | `1000` | Narrative calibration dial: 1000 (electric), 750 (venture), 500 (balanced), 250 (truth) |
+| `--persona PERSONA` | `solopreneur` | Audience persona: solopreneur (unicorn), enterprise (cto/vp), normie (consumer/magic) |
+| `--pack` | `False` | Generate the full multi-asset launch pack under runs/<name>/pack/ |
 
 ## The Hype-to-Honesty Dial
 
@@ -46,6 +48,22 @@ python -m prd_agent <path-to-target-repo>
 - **Level 250: Pure Technical Truth:** Clinical, understated, empirical rigor.
 
 In `--interactive` mode without `--hype`, the pipeline interactively prompts the operator before generation.
+
+## Audience Persona Calibration
+
+- **`solopreneur` (default):** Solo builders, 100x leverage, killing babysitting chores, shipping while sleeping.
+- **`enterprise`:** CTOs and VPs, boardroom liability, killing security theater, stopping runaway cloud bills.
+- **`normie`:** Everyday consumers, pure effortless magic, zero technical jargon, "flying cars" simplicity.
+
+## Multi-Asset Launch Pack (`--pack`)
+
+Generates `runs/<name>/pack/`:
+- `copy.json`: Landing page copy deck with headline, subhead, superpowers, before/after table, and CTAs.
+- `launch_thread.md`: 6-8 tweet viral X / Twitter announcement thread with spicy hook and proof.
+- `show_hn.md`: High-authenticity Show HN / Product Hunt launch narrative.
+- `pitch_deck.md`: 10-slide high-stakes pitch narrative with category shift, secret weapon, and unit economics.
+
+All generated assets strictly enforce zero em-dashes (`—`, `–`, `--`).
 
 ## Pipeline Stages
 
