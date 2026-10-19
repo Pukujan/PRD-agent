@@ -70,6 +70,34 @@ Starting revision, material inputs/configuration, runtime, exact command or prom
 
 No checkpoints yet.
 
+### 2026-10-19 18:47:20 UTC — Antigravity
+
+<!-- continuity:checkpoint {"agent":"Antigravity","blocked":[],"changed":["src/prd_agent/remote.py, src/prd_agent/cli.py, src/prd_agent/pipeline.py, action.yml, tests/test_remote_repo.py, README.md, skills/prd-agent/SKILL.md"],"completed":["Implemented remote Git repository resolution and shallow cloning in src/prd_agent/remote.py","Integrated remote intake into cli.py and pipeline.py, enabling prd-agent to point directly to any GitHub URL or shorthand owner/repo with caller workspace output","Created composite GitHub Action action.yml for one-step CI/CD turnkey execution in any repository"],"decisions":["no new decisions"],"evidence":["python -m pytest -q: 207 passed in 10.50s","python -m ruff check src/ tests/: 0 errors","python -m mypy src/: 0 errors in 22 source files","continuity validate --root .: VALID"],"next_action":"Open the pull request, wait for the gates check, auto-merge, and publish leaf receipt","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"PRA-0012","timestamp":"2026-10-19T18:47:20Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"f141dcd9731a8a27258e2bcd35c8c861a42f0141d3bd0f01281879c26f5ed223","request_id":"d94243d5760b4b95958a2ca99f2132ae","schema":"project-continuity.checkpoint-operation.v1","task_id":"PRA-0012"} -->
+
+Completed:
+- Implemented remote Git repository resolution and shallow cloning in src/prd_agent/remote.py
+- Integrated remote intake into cli.py and pipeline.py, enabling prd-agent to point directly to any GitHub URL or shorthand owner/repo with caller workspace output
+- Created composite GitHub Action action.yml for one-step CI/CD turnkey execution in any repository
+
+Evidence:
+- python -m pytest -q: 207 passed in 10.50s
+- python -m ruff check src/ tests/: 0 errors
+- python -m mypy src/: 0 errors in 22 source files
+- continuity validate --root .: VALID
+
+Decisions:
+- no new decisions
+
+Changed:
+- src/prd_agent/remote.py, src/prd_agent/cli.py, src/prd_agent/pipeline.py, action.yml, tests/test_remote_repo.py, README.md, skills/prd-agent/SKILL.md
+
+Blocked/uncertain:
+- none
+
+Next:
+- Open the pull request, wait for the gates check, auto-merge, and publish leaf receipt
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → minimum relevant spec. Checkpoint before stopping.
