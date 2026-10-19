@@ -8,6 +8,7 @@ so this module adds no dependency, no second credential and no HTML parsing.
 from __future__ import annotations
 
 import json
+import os
 from datetime import date
 
 from prd_agent import llm
@@ -68,8 +69,37 @@ Today is {searched_at}.
 """
 
 def search_tools() -> list[dict]:
-    """The provider-side search tool attached to the one call."""
+    """The provider-side search tool attached to the one call.
+
+    Can be suppressed via PRD_AGENT_NO_SEARCH_TOOL=1 for proxy environments
+    that do not support custom server-side tool definitions.
+    """
+    if os.environ.get("PRD_AGENT_NO_SEARCH_TOOL", "").strip().lower() in ("1", "true", "yes"):
+        return []
     return [WEB_SEARCH_TOOL]
+
+
+def is_search_context(text: str) -> bool:
+    """Detect whether text contains raw search snippets from a search tool or proxy."""
+    if not text or len(text) < 80:
+        return False
+    lower = text.lower()
+    has_url = "http://" in lower or "https://" in lower
+    search_indicators = (
+        "search result",
+        "duckduckgo",
+        "web search",
+        "results for",
+        "snippet",
+        "source:",
+        "url:",
+    )
+    if has_url and any(ind in lower for ind in search_indicators):
+        return True
+    if text.count("http://") + text.count("https://") >= 2:
+        return True
+    return False
+
 
 def build_trends_prompt(claims: dict, *, searched_at: str) -> str:
     schema = (
@@ -89,15 +119,34 @@ def build_trends_prompt(claims: dict, *, searched_at: str) -> str:
         searched_at=searched_at,
     )
 
+
 def analyze(claims: dict, llm: LLM, *, searched_at: str | None = None) -> dict:
     """Run the live pass and return a validated trends document."""
     stamp = searched_at or date.today().isoformat()
+    trends_prompt = build_trends_prompt(claims, searched_at=stamp)
     raw = llm.complete(
         system=TRENDS_SYSTEM,
-        prompt=build_trends_prompt(claims, searched_at=stamp),
+        prompt=trends_prompt,
         tools=search_tools(),
     )
-    doc = extract_json(raw)
+    try:
+        doc = extract_json(raw)
+    except ModelOutputError:
+        if is_search_context(raw):
+            synthesis_prompt = (
+                f"The web search pass returned the following raw search results and market snippets:\n\n"
+                f"{raw[:80000]}\n\n"
+                f"Using these search results and the artifact claims, generate the trends JSON document matching the required schema:\n\n"
+                f"{trends_prompt}"
+            )
+            synthesized = llm.complete(
+                system=TRENDS_SYSTEM,
+                prompt=synthesis_prompt,
+                tools=None,
+            )
+            doc = extract_json(synthesized)
+        else:
+            raise
     if not isinstance(doc, dict):
         raise ModelOutputError("the trends reply was not a JSON object")
     doc.setdefault("schema", TRENDS_SCHEMA)
