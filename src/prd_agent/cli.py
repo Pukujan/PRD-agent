@@ -82,6 +82,17 @@ def build_parser() -> argparse.ArgumentParser:
     )
     return parser
 
+
+def _print_battle_cry(five_lines: str) -> None:
+    if not five_lines:
+        return
+    print("\n" + "=" * 60)
+    print("          5-LINE EXECUTIVE BATTLE CRY")
+    print("=" * 60)
+    print(five_lines)
+    print("=" * 60 + "\n")
+
+
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     try:
@@ -119,6 +130,7 @@ def main(argv: list[str] | None = None) -> int:
     except StageError as error:
         print(f"prd-agent: {error}", file=sys.stderr)
         return 2
+
     if result.awaiting_answers:
         answers = flags_module.ask_questions(result.flags)
         result = close_flag_loop(
@@ -130,11 +142,13 @@ def main(argv: list[str] | None = None) -> int:
             pack=args.pack,
         )
         if result.story_path.is_file():
+            _print_battle_cry(result.five_lines)
             print(f"prd-agent: wrote {result.story_path}")
             if result.pack is not None:
                 print(f"prd-agent: generated launch pack under {result.pack.pack_dir}")
             return 0
         return 0
+    _print_battle_cry(result.five_lines)
     print(f"prd-agent: wrote {result.story_path}")
     if result.pack is not None:
         print(f"prd-agent: generated launch pack under {result.pack.pack_dir}")

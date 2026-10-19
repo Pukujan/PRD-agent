@@ -38,6 +38,7 @@ from prd_agent.errors import StageError
 from prd_agent.llm import LLM
 from prd_agent.pack import PackResult
 from prd_agent.schemas import TRENDS_SPEC, require_valid
+from prd_agent.voice import build_five_lines_from_positioning
 
 RUNS_DIR = "runs"
 STORIES_DIR = "stories"
@@ -54,6 +55,7 @@ class RunResult:
     report: CheckReport | None = None
     awaiting_answers: bool = False
     pack: PackResult | None = None
+    five_lines: str = ""
 
 def run_dir(root: Path, name: str) -> Path:
     return Path(root) / RUNS_DIR / name
@@ -141,6 +143,8 @@ def run(
     _write_json(target_run_dir / "trends.json", trends_doc)
     _write_json(target_run_dir / "positioning.json", positioned)
 
+    five_lines_text = build_five_lines_from_positioning(positioned)
+    (target_run_dir / "five_lines.txt").write_text(five_lines_text + "\n", encoding="utf-8")
 
     result = RunResult(
         task_name=name,
@@ -150,6 +154,7 @@ def run(
         trends_path=target_run_dir / "trends.json",
         positioning_path=target_run_dir / "positioning.json",
         flags=list(positioned.get("flags", [])),
+        five_lines=five_lines_text,
     )
 
     if not autonomous and answers is None and ask is None:
@@ -174,6 +179,9 @@ def run(
             )
             _write_json(target_run_dir / "positioning.json", positioned)
             result.flags = list(positioned.get("flags", []))
+            five_lines_text = build_five_lines_from_positioning(positioned)
+            (target_run_dir / "five_lines.txt").write_text(five_lines_text + "\n", encoding="utf-8")
+            result.five_lines = five_lines_text
 
     corpus = evals_stage.load_evals(evals_path or evals_stage.EVALS_PATH)
     exemplars = evals_stage.select_exemplars(corpus, positioning=positioned)
@@ -241,6 +249,10 @@ def close_flag_loop(
         persona=persona_choice,
     )
     _write_json(result.positioning_path, revised)
+    five_lines_text = build_five_lines_from_positioning(revised)
+    (result.run_dir / "five_lines.txt").write_text(five_lines_text + "\n", encoding="utf-8")
+    result.five_lines = five_lines_text
+
     page, report = story_stage.story(
         claims=claims,
         positioning=revised,
