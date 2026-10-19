@@ -70,6 +70,33 @@ Any repository processed by PRD-agent will receive a compelling, human-relatable
 
 No checkpoints yet.
 
+### 2026-10-19 03:36:27 UTC — Antigravity
+
+<!-- continuity:checkpoint {"agent":"Antigravity","blocked":[],"changed":["src/prd_agent/checks.py, src/prd_agent/story.py, src/prd_agent/trends.py, src/prd_agent/positioning.py, src/prd_agent/schemas.py, stories/acs-hot-loader.md, docs/GOLD_STANDARD.md, tests/"],"completed":["Enforced story-first dream creation and anti-audit machine gates across checks, story, positioning, trends, and schemas","Hard bans added in checks.py for ascii_em_dash, audit_jargon, code_path_in_prose, and feature_before_story","Removed build_footer() from story assembly so marketing stories are pure pitch with zero audit clutter","Cleaned stories/acs-hot-loader.md to match the reference gold standard with 0 bans and 0 cap violations"],"decisions":["no new decisions"],"evidence":["python -m pytest -q: 149 passed with 0 failures","continuity validate --root .: VALID"],"next_action":"Open pull request on GitHub, verify CI gates, and merge","protocol_version":"0.1.0-draft","schema":"project-continuity.checkpoint.v1","task_id":"PRA-0003","timestamp":"2026-10-19T03:36:27Z"} -->
+<!-- continuity:checkpoint-operation {"payload_sha256":"b40334ad8c58606f58a9fc04cea7c101a0eb0ccd81ca1d578ae8984fcbf5244a","request_id":"13f88baeadf54948bf5a5e409474d7a4","schema":"project-continuity.checkpoint-operation.v1","task_id":"PRA-0003"} -->
+
+Completed:
+- Enforced story-first dream creation and anti-audit machine gates across checks, story, positioning, trends, and schemas
+- Hard bans added in checks.py for ascii_em_dash, audit_jargon, code_path_in_prose, and feature_before_story
+- Removed build_footer() from story assembly so marketing stories are pure pitch with zero audit clutter
+- Cleaned stories/acs-hot-loader.md to match the reference gold standard with 0 bans and 0 cap violations
+
+Evidence:
+- python -m pytest -q: 149 passed with 0 failures
+- continuity validate --root .: VALID
+
+Decisions:
+- no new decisions
+
+Changed:
+- src/prd_agent/checks.py, src/prd_agent/story.py, src/prd_agent/trends.py, src/prd_agent/positioning.py, src/prd_agent/schemas.py, stories/acs-hot-loader.md, docs/GOLD_STANDARD.md, tests/
+
+Blocked/uncertain:
+- none
+
+Next:
+- Open pull request on GitHub, verify CI gates, and merge
+
 ## Handoff
 
 Read PROJECT → CURRENT → this task → minimum relevant spec. Checkpoint before stopping.
