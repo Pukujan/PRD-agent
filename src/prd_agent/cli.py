@@ -62,6 +62,17 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Hype-to-Honesty Dial level: 1000 (electric), 750 (venture), 500 (balanced), 250 (truth)",
     )
+    parser.add_argument(
+        "--persona",
+        default=None,
+        help="Audience persona: solopreneur (unicorn/builder), enterprise (cto/vp), normie (consumer/magic)",
+    )
+    parser.add_argument(
+        "--pack",
+        action="store_true",
+        default=False,
+        help="generate the full multi-asset launch pack (copy.json, launch_thread.md, show_hn.md, pitch_deck.md)",
+    )
     return parser
 
 def main(argv: list[str] | None = None) -> int:
@@ -70,11 +81,18 @@ def main(argv: list[str] | None = None) -> int:
         llm = default_llm()
         is_autonomous = not args.interactive if args.interactive else args.autonomous
         hype_level = args.hype
+        persona_choice = args.persona
         if not is_autonomous and hype_level is None:
             from prd_agent.hype import ask_hype_level
             hype_level = ask_hype_level()
         elif hype_level is None:
             hype_level = "1000"
+
+        if not is_autonomous and persona_choice is None:
+            from prd_agent.persona import ask_persona
+            persona_choice = ask_persona()
+        elif persona_choice is None:
+            persona_choice = "solopreneur"
 
         result = run(
             Path(args.artifact_path),
@@ -86,18 +104,31 @@ def main(argv: list[str] | None = None) -> int:
             live=not args.no_web,
             evals_path=Path(args.evals) if args.evals else None,
             hype=hype_level,
+            persona=persona_choice,
+            pack=args.pack,
         )
     except StageError as error:
         print(f"prd-agent: {error}", file=sys.stderr)
         return 2
     if result.awaiting_answers:
         answers = flags_module.ask_questions(result.flags)
-        result = close_flag_loop(result, llm=llm, answers=answers, hype=hype_level)
+        result = close_flag_loop(
+            result,
+            llm=llm,
+            answers=answers,
+            hype=hype_level,
+            persona=persona_choice,
+            pack=args.pack,
+        )
         if result.story_path.is_file():
             print(f"prd-agent: wrote {result.story_path}")
+            if result.pack is not None:
+                print(f"prd-agent: generated launch pack under {result.pack.pack_dir}")
             return 0
         return 0
     print(f"prd-agent: wrote {result.story_path}")
+    if result.pack is not None:
+        print(f"prd-agent: generated launch pack under {result.pack.pack_dir}")
     return 0
 
 if __name__ == "__main__":

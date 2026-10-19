@@ -15,6 +15,7 @@ from prd_agent.errors import ModelOutputError
 from prd_agent.flags import make_flag
 from prd_agent.hype import get_hype_tier
 from prd_agent.llm import LLM, extract_json
+from prd_agent.persona import get_persona
 from prd_agent.schemas import POSITIONING_SCHEMA, POSITIONING_SPEC, require_valid
 
 SWAP_OVERLAP_THRESHOLD = 0.6
@@ -71,6 +72,10 @@ Trends (competitor language, market stage, register):
 Narrative calibration:
 
 {hype_directive}
+
+Audience persona:
+
+{persona_directive}
 
 {answers}
 """
@@ -134,8 +139,10 @@ def build_positioning_prompt(
     *,
     answers: str | None = None,
     hype: str | None = None,
+    persona: str | None = None,
 ) -> str:
     tier = get_hype_tier(hype)
+    pers = get_persona(persona)
     schema = (
         '{"schema": "prd-agent.positioning.v1", '
         '"audience": {"who": "", "situation": "", "trigger": ""}, '
@@ -150,6 +157,7 @@ def build_positioning_prompt(
         trends=json.dumps(trends, indent=2, ensure_ascii=False),
         answers=answers or "No owner answers were supplied for this run.",
         hype_directive=tier.directive,
+        persona_directive=pers.directive,
     )
 
 
@@ -160,11 +168,13 @@ def positioning(
     *,
     answers: str | None = None,
     hype: str | None = None,
+    persona: str | None = None,
 ) -> dict:
     tier = get_hype_tier(hype)
+    pers = get_persona(persona)
     raw = llm.complete(
         system=POSITIONING_SYSTEM,
-        prompt=build_positioning_prompt(claims, trends, answers=answers, hype=tier.level),
+        prompt=build_positioning_prompt(claims, trends, answers=answers, hype=tier.level, persona=pers.id),
     )
     doc = extract_json(raw)
     if not isinstance(doc, dict):
@@ -172,6 +182,7 @@ def positioning(
     doc.setdefault("schema", POSITIONING_SCHEMA)
     doc.setdefault("flags", [])
     doc["hype_level"] = tier.level
+    doc["persona"] = pers.id
     result = swap_test(str(doc.get("differentiator", "")), list(trends.get("category", {}).get("competitors", [])))
     doc["swap_test"] = {"passed": result.passed, "note": result.note}
     if not result.passed:

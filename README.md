@@ -24,6 +24,8 @@ PRD-agent runs **autonomously by default**: it reads the artifact, searches the 
 | `--answers-file PATH` | A JSON object of flag id to answer, instead of reading stdin |
 | `--evals PATH` | Where to append the worked example (default: `evals/story_evals.json`) |
 | `--hype LEVEL` | Narrative calibration dial: `1000` (electric), `750` (venture), `500` (balanced), `250` (truth) |
+| `--persona PERSONA` | Target buyer persona: `solopreneur` (unicorn/builder), `enterprise` (cto/vp), `normie` (consumer/magic) |
+| `--pack` | Generate the full multi-asset launch pack under `runs/<artifact-name>/pack/` |
 
 The output in `stories/<artifact-name>.md` is pure pitch: zero audit tables, zero internal code paths, zero em dashes. Every run writes truth telemetry to `runs/<artifact-name>/claims.json`, `trends.json` and `positioning.json`, keeping verification segregated from marketing copy.
 
@@ -37,6 +39,27 @@ Calibrate how loud the story goes depending on your target audience:
 - **Level 250: Pure Technical Truth**: Clinical, understated, empirical rigor. Code, benchmarks, and data speak for themselves.
 
 In `--interactive` mode without `--hype`, `prd-agent` interactively prompts you to choose the dial before generation.
+
+## Audience Persona Calibration
+
+Tailor the vocabulary, nightmares, and dream states to who is holding the wallet:
+
+- **`solopreneur` (default)**: Infinite leverage, autonomous shipping speed, killing administrative drag, out-building 50-person legacy teams as a One-Person Unicorn.
+- **`enterprise`**: Boardroom liability, killing security theater, stopping runaway cloud API bills, eliminating zero-day leaks, and breaking vendor cartels.
+- **`normie`**: Pure everyday magic, zero jargon, zero terminal commands, effortless lifestyle elevation, and "flying cars" simplicity.
+
+In `--interactive` mode without `--persona`, `prd-agent` prompts you to choose your buyer persona.
+
+## Multi-Asset Launch Pack (`--pack`)
+
+Passing `--pack` generates the complete go-to-market launch arsenal in `runs/<artifact-name>/pack/`:
+
+1. **`copy.json`**: Complete landing page copy deck with hero headline, subhead, 4-5 superpower feature breakdowns, before/after contrast table, social proof hooks, and high-converting CTAs.
+2. **`launch_thread.md`**: 6-8 tweet viral X / Twitter announcement thread with pattern-interrupt hook, 3:00 AM nightmare drama, architectural breakthrough, and proof benchmarks.
+3. **`show_hn.md`**: Authentic Show HN / Product Hunt launch drop covering founder origin, architecture, dogfooding insights, and discussion invitation.
+4. **`pitch_deck.md`**: 10-slide high-stakes venture narrative covering the category shift, the bleeding wound, the secret weapon moat, and unit economics.
+
+All generated assets strictly enforce the zero em-dash policy (`—`, `–`, `--`) and inherit the active hype dial and audience persona.
 
 ## The four stages
 

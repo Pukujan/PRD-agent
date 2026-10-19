@@ -235,3 +235,25 @@ def test_story_prompt_carries_hype_directive(pcm_run: Path) -> None:
     )
     assert "ELECTRIC GOD-MODE" in rewrite_prompt
 
+
+def test_story_prompt_carries_persona_directive(pcm_run: Path) -> None:
+    prompt_normie = story.build_story_prompt(
+        positioning=load(pcm_run / "positioning.json"),
+        claims=load(pcm_run / "claims.json"),
+        trends=load(pcm_run / "trends.json"),
+        persona="normie",
+    )
+    assert "NORMIE" in prompt_normie
+    assert "flying car" in prompt_normie.lower()
+
+    rewrite_prompt = story.build_rewrite_prompt(
+        body=BAD_BODY,
+        report=check_story(BAD_BODY),
+        positioning=load(pcm_run / "positioning.json"),
+        claims=load(pcm_run / "claims.json"),
+        persona="enterprise",
+    )
+    assert "ENTERPRISE" in rewrite_prompt
+    assert "boardroom liability" in rewrite_prompt.lower()
+
+

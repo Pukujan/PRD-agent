@@ -118,3 +118,27 @@ def test_interactive_prompts_for_hype(monkeypatch) -> None:
     assert called == [True]
 
 
+def test_persona_and_pack_flags_parse() -> None:
+    args = cli.build_parser().parse_args(["repo", "--persona", "enterprise", "--pack"])
+    assert args.persona == "enterprise"
+    assert args.pack is True
+
+
+def test_interactive_prompts_for_persona(monkeypatch) -> None:
+    called_hype = []
+    called_persona = []
+
+    monkeypatch.setattr("prd_agent.hype.ask_hype_level", lambda: (called_hype.append(True), "1000")[1])
+    monkeypatch.setattr("prd_agent.persona.ask_persona", lambda: (called_persona.append(True), "enterprise")[1])
+    monkeypatch.setattr("prd_agent.cli.run", lambda *args, **kwargs: None)
+    monkeypatch.setattr("prd_agent.cli.default_llm", lambda: None)
+
+    try:
+        cli.main(["repo", "--interactive", "--no-web", "--trends-file", "t.json"])
+    except Exception:
+        pass
+    assert called_hype == [True]
+    assert called_persona == [True]
+
+
+

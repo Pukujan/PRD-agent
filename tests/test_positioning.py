@@ -128,3 +128,18 @@ def test_the_positioning_prompt_carries_hype_directive(pcm_run: Path) -> None:
     assert result["hype_level"] == "750"
 
 
+def test_the_positioning_prompt_carries_persona_directive(pcm_run: Path) -> None:
+    prompt_ent = positioning.build_positioning_prompt(
+        load(pcm_run / "claims.json"), load(FIXTURE), persona="enterprise"
+    )
+    assert "ENTERPRISE" in prompt_ent
+    assert "boardroom liability" in prompt_ent.lower()
+
+    doc = load(pcm_run / "positioning.json")
+    result = positioning.positioning(
+        load(pcm_run / "claims.json"), load(FIXTURE), FakeLLM(json.dumps(doc)), persona="normie"
+    )
+    assert result["persona"] == "normie"
+
+
+
