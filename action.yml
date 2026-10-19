@@ -1,0 +1,92 @@
+name: "PRD Agent"
+description: "Turn any repository into an irresistible marketing manifesto and README."
+author: "Pukujan"
+branding:
+  icon: "zap"
+  color: "amber"
+inputs:
+  anthropic_api_key:
+    description: "Anthropic API Key or proxy master key"
+    required: false
+  anthropic_base_url:
+    description: "Custom API base URL (e.g. LiteLLM proxy)"
+    required: false
+  model:
+    description: "LLM model override"
+    required: false
+  readme:
+    description: "Overwrite target repository README.md (true/false)"
+    required: false
+    default: "false"
+  hype:
+    description: "Calibration voice: electric, venture, technical"
+    required: false
+    default: "electric"
+  persona:
+    description: "Audience persona: solopreneur, enterprise, normie"
+    required: false
+    default: "solopreneur"
+  pack:
+    description: "Generate multi-asset launch pack (copy.json, launch_thread.md, etc.)"
+    required: false
+    default: "false"
+  target_path:
+    description: "Path to target repository code (default: current directory)"
+    required: false
+    default: "."
+outputs:
+  story_path:
+    description: "Path to the generated marketing story"
+    value: ${{ steps.run-prd.outputs.story_path }}
+  five_lines:
+    description: "The 5-line executive battle cry"
+    value: ${{ steps.run-prd.outputs.five_lines }}
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install PRD Agent
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e "${{ github.action_path }}"
+
+    - name: Run PRD Agent Narrative Engine
+      id: run-prd
+      shell: bash
+      env:
+        ANTHROPIC_API_KEY: ${{ inputs.anthropic_api_key || env.ANTHROPIC_API_KEY }}
+        ANTHROPIC_BASE_URL: ${{ inputs.anthropic_base_url || env.ANTHROPIC_BASE_URL }}
+        PRD_AGENT_MODEL: ${{ inputs.model || env.PRD_AGENT_MODEL }}
+      run: |
+        ARGS=("${{ inputs.target_path }}" "--autonomous")
+        if [ "${{ inputs.readme }}" = "true" ]; then
+          ARGS+=("--readme")
+        fi
+        if [ "${{ inputs.pack }}" = "true" ]; then
+          ARGS+=("--pack")
+        fi
+        if [ -n "${{ inputs.hype }}" ]; then
+          ARGS+=("--hype" "${{ inputs.hype }}")
+        fi
+        if [ -n "${{ inputs.persona }}" ]; then
+          ARGS+=("--persona" "${{ inputs.persona }}")
+        fi
+
+        python -m prd_agent "${ARGS[@]}"
+
+        TARGET_NAME=$(basename $(realpath "${{ inputs.target_path }}"))
+        if [ -f "runs/${TARGET_NAME}/five_lines.txt" ]; then
+          echo "five_lines<<EOF" >> $GITHUB_OUTPUT
+          cat "runs/${TARGET_NAME}/five_lines.txt" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+        fi
+        if [ "${{ inputs.readme }}" = "true" ]; then
+          echo "story_path=${{ inputs.target_path }}/README.md" >> $GITHUB_OUTPUT
+        else
+          echo "story_path=stories/${TARGET_NAME}.md" >> $GITHUB_OUTPUT
+        fi

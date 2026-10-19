@@ -30,8 +30,8 @@ python -m prd_agent <path-to-target-repo>
 
 | Flag | Default | Description |
 | :--- | :--- | :--- |
-| `artifact_path` | *(required)* | Path to the target repository or artifact directory |
-| `--readme` | `False` | Write the generated marketing story directly to `<artifact_path>/README.md` |
+| `artifact_path` | *(required)* | Path to local directory or remote GitHub repository URL (`https://github.com/...`, `owner/repo`) |
+| `--readme` | `False` | Write the generated marketing story directly to `<artifact_path>/README.md` (or `./README.md` for remotes) |
 | `--out PATH` | `stories/<name>.md` | Custom output path for the story markdown |
 | `--interactive` | `False` | Stop and prompt the human interactively on open flags |
 | `--trends-file PATH` | `None` | Use a local JSON file for trends instead of running a live web search |
