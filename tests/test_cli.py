@@ -94,3 +94,27 @@ def test_no_web_parses() -> None:
     assert args.trends_file == "t.json"
 
 
+def test_hype_flag_parses() -> None:
+    args = cli.build_parser().parse_args(["repo", "--hype", "1000"])
+    assert args.hype == "1000"
+    args2 = cli.build_parser().parse_args(["repo", "--hype", "venture"])
+    assert args2.hype == "venture"
+
+
+def test_interactive_prompts_for_hype(monkeypatch) -> None:
+    called = []
+    def fake_ask():
+        called.append(True)
+        return "750"
+
+    monkeypatch.setattr("prd_agent.hype.ask_hype_level", fake_ask)
+    monkeypatch.setattr("prd_agent.cli.run", lambda *args, **kwargs: None)
+    monkeypatch.setattr("prd_agent.cli.default_llm", lambda: None)
+
+    try:
+        cli.main(["repo", "--interactive", "--no-web", "--trends-file", "t.json"])
+    except Exception:
+        pass
+    assert called == [True]
+
+

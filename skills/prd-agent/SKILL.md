@@ -36,6 +36,16 @@ python -m prd_agent <path-to-target-repo>
 | `--trends-file PATH` | `None` | Use a local JSON file for trends instead of running a live web search |
 | `--no-web` | `False` | Disable live web search (requires `--trends-file`) |
 | `--answers-file PATH`| `None` | Pass a JSON file of flag answers for automated flag closure |
+| `--hype LEVEL` | `1000` | Narrative calibration dial: 1000 (electric), 750 (venture), 500 (balanced), 250 (truth) |
+
+## The Hype-to-Honesty Dial
+
+- **Level 1000: Electric God-Mode (default):** Maximum kinetic energy, loud optimism, One-Person Unicorn, 100x leverage.
+- **Level 750: High-Converting Venture Hype:** Visceral 2:00 AM founder nightmare, unlocked dream, aggressive contrast.
+- **Level 500: Balanced Authority:** Confident, dignified engineering reality with zero buzzwords.
+- **Level 250: Pure Technical Truth:** Clinical, understated, empirical rigor.
+
+In `--interactive` mode without `--hype`, the pipeline interactively prompts the operator before generation.
 
 ## Pipeline Stages
 

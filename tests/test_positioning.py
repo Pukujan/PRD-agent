@@ -108,3 +108,23 @@ def test_the_positioning_prompt_requires_nightmare_and_dream_scenes(pcm_run: Pat
     assert "dream scene" in prompt
     assert "metaphor" in prompt
 
+
+def test_the_positioning_prompt_carries_hype_directive(pcm_run: Path) -> None:
+    prompt_1000 = positioning.build_positioning_prompt(
+        load(pcm_run / "claims.json"), load(FIXTURE), hype="1000"
+    )
+    assert "ELECTRIC GOD-MODE" in prompt_1000
+    assert "One-Person Unicorn" in prompt_1000
+
+    prompt_250 = positioning.build_positioning_prompt(
+        load(pcm_run / "claims.json"), load(FIXTURE), hype="truth"
+    )
+    assert "PURE TECHNICAL TRUTH" in prompt_250
+
+    doc = load(pcm_run / "positioning.json")
+    result = positioning.positioning(
+        load(pcm_run / "claims.json"), load(FIXTURE), FakeLLM(json.dumps(doc)), hype="750"
+    )
+    assert result["hype_level"] == "750"
+
+

@@ -256,4 +256,20 @@ def repo_root_fixture() -> Path:
     return Path(__file__).resolve().parents[1] / "tests" / "fixtures" / "trends_pcm.json"
 
 
+def test_pipeline_run_passes_hype_parameter(tmp_path: Path, pcm_run: Path) -> None:
+    artifact = tmp_path / "mini"
+    artifact.mkdir()
+    (artifact / "README.md").write_text("# mini\n", encoding="utf-8")
+    fake = FakeLLM([
+        (pcm_run / "claims.json").read_text(encoding="utf-8"),
+        (pcm_run / "trends.json").read_text(encoding="utf-8"),
+        (pcm_run / "positioning.json").read_text(encoding="utf-8"),
+        GOOD_BODY,
+    ])
+    result = pipeline.run(artifact, llm=fake, autonomous=True, hype="250")
+    assert "PURE TECHNICAL TRUTH" in str(fake.calls[2]["prompt"])
+    assert "PURE TECHNICAL TRUTH" in str(fake.calls[3]["prompt"])
+    assert result.story_path.is_file()
+
+
 
