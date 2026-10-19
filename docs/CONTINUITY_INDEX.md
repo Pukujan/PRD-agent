@@ -23,7 +23,7 @@
 - Local content status: **NEEDS_REVIEW**
 - Last reviewed at commit: `uncommitted`
 - Reviewed SHA-256: `1136600cca166f326b6f54de42aaafe9bf34c3df9ac5e697d1a2273a1b6b1321`
-- Current SHA-256: `8753d265e45ebb505a25edaefad2ee355149d43971c915731a0608a47f7379e6`
+- Current SHA-256: `197e626e05606ab8dac58bf90d0d7369db3bbaf9ed3b1d585d2538c0df328ecc`
 - Summary: Active task projection and completed milestone log
 - Search terms: none
 - Neighboring records: none
@@ -56,10 +56,10 @@
 ## PRD-agent README (`readme`)
 
 - File: [`README.md`](../README.md)
-- Local content status: **CURRENT**
+- Local content status: **NEEDS_REVIEW**
 - Last reviewed at commit: `ef83e6e9ddf4481eb997e540ecf759a2c7c182fb`
 - Reviewed SHA-256: `316468fc7d7fda56042302c0a8f534df18aaa25032001e6d97b4f6bdc87095cc`
-- Current SHA-256: `316468fc7d7fda56042302c0a8f534df18aaa25032001e6d97b4f6bdc87095cc`
+- Current SHA-256: `7156a716f3a06a4be7ce87947a589594dccc58984a84ff13d555c6bc1cc9928d`
 - Summary: Main product overview and autonomous pipeline usage
 - Search terms: none
 - Neighboring records: none
@@ -71,7 +71,7 @@
 - Local content status: **NEEDS_REVIEW**
 - Last reviewed at commit: `ef83e6e9ddf4481eb997e540ecf759a2c7c182fb`
 - Reviewed SHA-256: `caea1a62b5c393920e46bc79888ac8ec16620ac490ea6a45474adfe9f427accf`
-- Current SHA-256: `ae54629efaf35537df6ed331a39a85d23483b1b2a9236d4a4fcc0ca222977d02`
+- Current SHA-256: `494c83d1c9f0deb099e3c97809e6b14e63a66915784aa7a820669f068ff608aa`
 - Summary: Agent discovery and operating reference for PRD-agent
 - Search terms: none
 - Neighboring records: none

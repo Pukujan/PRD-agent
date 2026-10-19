@@ -101,13 +101,15 @@ def run(
     hype: str | None = None,
     persona: str | None = None,
     pack: bool = False,
+    dest_root: Path | None = None,
+    repo_name: str | None = None,
 ) -> RunResult:
     """Run intake, trends, positioning and story. Human mode stops at the flag loop."""
     artifact_path = Path(artifact_path)
     if not artifact_path.exists():
         raise StageError(f"artifact path does not exist: {artifact_path}")
-    root = artifact_path.resolve().parent
-    name = artifact_path.resolve().name
+    root = dest_root if dest_root is not None else artifact_path.resolve().parent
+    name = repo_name or artifact_path.resolve().name
 
     if not live and trends is None and trends_file is None:
         raise StageError(
@@ -136,7 +138,7 @@ def run(
     if out is not None:
         target_story = Path(out)
     elif readme:
-        target_story = artifact_path / "README.md"
+        target_story = (dest_root / "README.md") if dest_root is not None else (artifact_path / "README.md")
     else:
         target_story = default_out(root, name)
     _write_json(target_run_dir / "claims.json", claims)

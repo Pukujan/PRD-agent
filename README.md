@@ -30,6 +30,41 @@ PRD-agent runs **autonomously by default**: it reads the artifact, searches the 
 
 The output in `stories/<artifact-name>.md` (or `<artifact_path>/README.md` with `--readme`) is pure pitch: zero audit tables, zero internal code paths, zero em dashes. Every run writes truth telemetry to `runs/<artifact-name>/claims.json`, `trends.json` and `positioning.json`, keeping verification segregated from marketing copy.
 
+## Point Any Remote Repository
+
+You can run PRD-agent directly against any public Git or GitHub repository without cloning it locally first:
+
+```bash
+# Point to a GitHub URL
+python -m prd_agent https://github.com/SouthpawIN/turbofit
+
+# Or shorthand owner/repo
+python -m prd_agent SouthpawIN/turbofit
+```
+
+PRD-agent shallow-clones the remote codebase into a managed workspace, executes intake and positioning, prints the 5-Line Executive Battle Cry directly to your terminal, and writes `stories/<repo-name>.md` and `runs/<repo-name>/` in your current directory.
+
+## GitHub Action Turnkey
+
+Point any repository to PRD-agent directly in CI/CD by adding a single workflow step to `.github/workflows/prd-story.yml`:
+
+```yaml
+name: Generate Product Story
+on: [workflow_dispatch]
+
+jobs:
+  story:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: Pukujan/PRD-agent@main
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          readme: true
+```
+
+This automatically inspects your repository, verifies against anti-audit gates, and writes the high-converting manifesto directly into your `README.md`.
+
 
 ## The Hype-to-Honesty Dial
 
